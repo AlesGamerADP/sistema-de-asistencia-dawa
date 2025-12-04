@@ -1,0 +1,508 @@
+/**
+ * Estilos para LoginPage
+ * 
+ * Incluye animaciones de fondo y efectos visuales profesionales
+ */
+
+/* ============================================
+ * FONDO ANIMADO CON TRANSICIÓN SUAVE
+ * ============================================ */
+.login-background {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* Gradiente 1 */
+.login-background.gradient-1 {
+  background-image: linear-gradient(45deg, #93a5cf 0%, #e4efe9 100%);
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* Gradiente 2 */
+.login-background.gradient-2 {
+  background-color: #DCD9D4;
+  background-image: 
+    linear-gradient(to bottom, rgba(255,255,255,0.50) 0%, rgba(0,0,0,0.50) 100%),
+    radial-gradient(at 50% 0%, rgba(255,255,255,0.10) 0%, rgba(0,0,0,0.50) 50%);
+  background-blend-mode: soft-light, screen;
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* ============================================
+ * ANIMACIONES DE FONDO
+ * ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* ============================================
+ * EFECTO DE PARTÍCULAS DE FONDO (OPCIONAL)
+ * ============================================ */
+.login-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ============================================
+ * CONTENEDOR DEL FORMULARIO
+ * ============================================ */
+.login-background-content {
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5vh;
+  padding-bottom: 2vh;
+  padding-left: clamp(1rem, 3vw, 2.5rem);
+  padding-right: clamp(1rem, 3vw, 2.5rem);
+  overflow: hidden;
+}
+
+.login-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  transform-origin: top center;
+  will-change: transform;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Scrollbar personalizado para Webkit */
+.login-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.login-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.login-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.login-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+ * RESPONSIVE UNIVERSAL - TODOS LOS DISPOSITIVOS
+ * ============================================ */
+
+/* DESKTOP GRANDE - Pantallas muy grandes */
+@media (min-width: 1200px) and (min-height: 800px) {
+  .login-background-content {
+    padding-top: 8vh;
+  }
+  .login-container {
+    max-height: 85vh;
+  }
+}
+
+/* TABLETS PORTRAIT - iPad, Galaxy Tab */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .login-background-content {
+    padding-top: 6vh;
+  }
+  .login-container {
+    transform: scale(0.98);
+    max-height: 88vh;
+  }
+}
+
+/* TABLETS LANDSCAPE */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .login-background-content {
+    padding-top: 2vh;
+  }
+  .login-container {
+    transform: scale(0.88);
+    max-height: 94vh;
+  }
+}
+
+/* MÓVILES GRANDES - iPhone Pro Max, Samsung S23 Ultra (> 414px) */
+@media (max-width: 767px) and (min-width: 415px) and (orientation: portrait) {
+  .login-background-content {
+    padding-top: 4vh;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .login-container {
+    transform: scale(0.92);
+    max-height: 90vh;
+    padding: 0 0.5rem;
+  }
+}
+
+/* MÓVILES MEDIANOS - iPhone 12/13/14, Pixel (375px - 414px) */
+@media (max-width: 414px) and (min-width: 376px) and (orientation: portrait) {
+  .login-background-content {
+    padding-top: 3vh;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  .login-container {
+    transform: scale(0.88);
+    max-height: 92vh;
+    padding: 0 0.25rem;
+  }
+}
+
+/* MÓVILES PEQUEÑOS - iPhone SE, Samsung A series (360px - 375px) */
+@media (max-width: 375px) and (min-width: 361px) and (orientation: portrait) {
+  .login-background-content {
+    padding-top: 2vh;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .login-container {
+    transform: scale(0.84);
+    max-height: 94vh;
+    padding: 0;
+  }
+}
+
+/* MÓVILES MUY PEQUEÑOS - Dispositivos compactos (< 360px) */
+@media (max-width: 360px) and (orientation: portrait) {
+  .login-background-content {
+    padding-top: 1.5vh;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .login-container {
+    transform: scale(0.80);
+    max-height: 95vh;
+    padding: 0;
+  }
+}
+
+/* MÓVILES EN LANDSCAPE - Todos los tamaños */
+@media (max-width: 768px) and (orientation: landscape) {
+  .login-background-content {
+    padding-top: 0.5vh;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .login-container {
+    transform: scale(0.75);
+    max-height: 97vh;
+  }
+}
+
+/* AJUSTES POR ALTURA (Independiente del ancho) */
+@media (max-height: 900px) {
+  .login-background-content {
+    padding-top: 3vh;
+  }
+}
+
+@media (max-height: 800px) {
+  .login-background-content {
+    padding-top: 2vh;
+  }
+  .login-container {
+    transform: scale(0.95);
+    max-height: 92vh;
+  }
+}
+
+@media (max-height: 700px) {
+  .login-background-content {
+    padding-top: 1vh;
+  }
+  .login-container {
+    transform: scale(0.90);
+    max-height: 94vh;
+  }
+}
+
+@media (max-height: 600px) {
+  .login-background-content {
+    padding-top: 0.5vh;
+  }
+  .login-container {
+    transform: scale(0.85);
+    max-height: 96vh;
+  }
+}
+
+@media (max-height: 500px) {
+  .login-background-content {
+    padding-top: 0.25vh;
+  }
+  .login-container {
+    transform: scale(0.78);
+    max-height: 98vh;
+  }
+}
+
+@media (max-height: 400px) {
+  .login-container {
+    transform: scale(0.70);
+    max-height: 99vh;
+  }
+}
+
+/* PANTALLAS MUY PEQUEÑAS (Combinación crítica) */
+@media (max-width: 360px) and (max-height: 640px) {
+  .login-background-content {
+    padding-top: 1vh;
+  }
+  .login-container {
+    transform: scale(0.76);
+    max-height: 96vh;
+  }
+}
+
+/* ============================================
+ * ANIMACIÓN DE REBOTE PARA EL TÍTULO
+ * ============================================ */
+.bounce-title {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-50px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+ * ANIMACIÓN DE ERROR/SHAKE
+ * ============================================ */
+.shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+/* ============================================
+ * SKELETON PULSE ANIMATION
+ * ============================================ */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.skeleton-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+ * SHIMMER EFFECT (EFECTO DE BRILLO)
+ * ============================================ */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #f8f8f8 50%,
+    #f0f0f0 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* ============================================
+ * TRANSICIONES SUAVES
+ * ============================================ */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+ * RESPONSIVE
+ * ============================================ */
+@media (max-width: 640px) {
+  .login-background {
+    padding: 0.5rem;
+  }
+  
+  .login-container {
+    max-width: 100%;
+    padding: 0.5rem;
+  }
+  
+  .login-background-content {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .login-container {
+    padding: 0.25rem;
+  }
+}
+
+
+/* ============================================
+ * MODO OSCURO (OPCIONAL)
+ * ============================================ */
+@media (prefers-color-scheme: dark) {
+  .login-background.gradient-1 {
+    background-image: linear-gradient(45deg, #434343 0%, #000000 100%);
+  }
+  
+  .login-background.gradient-2 {
+    background-color: #1a1a1a;
+    background-image: 
+      linear-gradient(to bottom, rgba(0,0,0,0.50) 0%, rgba(255,255,255,0.05) 100%),
+      radial-gradient(at 50% 0%, rgba(0,0,0,0.50) 0%, rgba(255,255,255,0.10) 50%);
+  }
+  
+  /* Asegurar que los textos sean visibles en modo oscuro */
+  .text-gray-700 {
+    color: rgb(55, 65, 81) !important;
+  }
+  
+  .text-gray-600 {
+    color: rgb(75, 85, 99) !important;
+  }
+  
+  .text-gray-500 {
+    color: rgb(107, 114, 128) !important;
+  }
+  
+  /* Fondo blanco sólido para las credenciales */
+  .bg-white {
+    background-color: rgb(255, 255, 255) !important;
+    opacity: 1 !important;
+  }
+  
+  /* Asegurar contraste en los borders */
+  .border-gray-200 {
+    border-color: rgb(229, 231, 235) !important;
+  }
+}
+
+/* ============================================
+ * ACCESIBILIDAD
+ * ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+ * CREDENCIALES - FORZAR VISIBILIDAD
+ * ============================================ */
+.credentials-card {
+  transition: background-color 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.credentials-box {
+  background-color: #FFFFFF !important;
+  transition: border-color 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.credentials-box p {
+  color: #374151 !important;
+}
+
+.credentials-box strong {
+  color: #1F2937 !important;
+  font-weight: 600;
+}
+
+/* Forzar opacidad completa en modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .credentials-card,
+  .credentials-box {
+    opacity: 1 !important;
+  }
+  
+  .credentials-box {
+    background-color: #FFFFFF !important;
+  }
+  
+  .credentials-box p,
+  .credentials-box strong {
+    color: #374151 !important;
+    opacity: 1 !important;
+  }
+}

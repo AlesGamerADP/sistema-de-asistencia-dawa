@@ -1,0 +1,207 @@
+/**
+ * Estilos para RoleSwitch (Segmented Control)
+ * 
+ * Inspirado en el diseño de iOS 13+
+ * Con animaciones suaves y efecto de rebote
+ */
+
+/* ============================================
+ * CONTENEDOR PRINCIPAL
+ * ============================================ */
+.segmented-controls {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #e2e2e9;
+  height: 2.5rem;
+  padding: 0.125rem;
+  margin: 0 auto 1.5rem;
+  max-width: 100%;
+  transition: all 0.3s ease;
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .segmented-controls {
+    background: #374151;
+  }
+}
+
+/* ============================================
+ * INPUTS (VISUALMENTE OCULTOS)
+ * ============================================ */
+.segmented-controls input {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/* ============================================
+ * LABELS (OPCIONES VISIBLES)
+ * ============================================ */
+.segmented-controls label {
+  display: flex;
+  flex-direction: row;
+  gap: 0.375rem;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  flex: 1 1 0;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+  font-size: 0.8125rem;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  line-height: 1;
+  color: #666;
+  user-select: none;
+}
+
+/* Iconos en los labels */
+.segmented-controls .role-icon {
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+/* Modo oscuro para labels NO seleccionados - BLANCO BRILLANTE */
+@media (prefers-color-scheme: dark) {
+  .segmented-controls label {
+    color: #FFFFFF !important;
+    font-weight: 600;
+  }
+}
+
+/* Label activo (seleccionado) */
+.segmented-controls input:checked + label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #000 !important;
+}
+
+/* Modo oscuro para label activo - NEGRO sobre fondo claro */
+@media (prefers-color-scheme: dark) {
+  .segmented-controls input:checked + label {
+    color: #000000 !important;
+  }
+}
+
+/* Hover effect */
+.segmented-controls label:hover {
+  color: #333;
+}
+
+/* Modo oscuro para hover - MÁS BRILLANTE */
+@media (prefers-color-scheme: dark) {
+  .segmented-controls label:hover {
+    color: #FFFFFF !important;
+    opacity: 0.9;
+  }
+}
+
+/* ============================================
+ * DIVIDERS (LÍNEAS SEPARADORAS)
+ * ============================================ */
+.segmented-controls label:not(:first-of-type)::before {
+  content: "";
+  position: absolute;
+  z-index: -3;
+  top: 0.5rem;
+  left: 0;
+  bottom: 0.5rem;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.15);
+  transition: opacity 0.3s ease;
+}
+
+/* Ocultar dividers antes y después de la opción seleccionada */
+.segmented-controls input:checked + label::before,
+.segmented-controls input:checked + label + input + label::before {
+  opacity: 0;
+}
+
+/* ============================================
+ * PADDLE (FONDO DESLIZANTE ANIMADO)
+ * ============================================ */
+.paddle {
+  position: absolute;
+  top: 0.125rem;
+  bottom: 0.125rem;
+  left: 0.125rem;
+  width: calc(50% - 0.125rem);
+  background: white;
+  border-radius: 0.4rem;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 
+    0px 3px 1px rgba(0, 0, 0, 0.04),
+    0px 3px 8px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+/* Modo oscuro para paddle - GRIS CLARO/BLANCO */
+@media (prefers-color-scheme: dark) {
+  .paddle {
+    background: #E5E7EB !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0px 3px 1px rgba(0, 0, 0, 0.3),
+      0px 3px 8px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ============================================
+ * FOCUS STATE (ACCESIBILIDAD)
+ * ============================================ */
+.segmented-controls:focus-within {
+  outline: none;
+}
+
+.segmented-controls input:focus {
+  outline: none;
+}
+
+/* ============================================
+ * RESPONSIVE
+ * ============================================ */
+@media (max-width: 640px) {
+  .segmented-controls {
+    height: 2.25rem;
+  }
+  
+  .segmented-controls label {
+    font-size: 0.75rem;
+  }
+  
+  .segmented-controls input:checked + label {
+    font-size: 0.8125rem;
+  }
+}
+
+/* ============================================
+ * DARK MODE (OPCIONAL)
+ * ============================================ */
+@media (prefers-color-scheme: dark) {
+  .segmented-controls {
+    background: #2c2c2e;
+  }
+  
+  .segmented-controls label {
+    color: #999;
+  }
+  
+  .segmented-controls input:checked + label {
+    color: #fff;
+  }
+  
+  .paddle {
+    background: #3a3a3c;
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+}
