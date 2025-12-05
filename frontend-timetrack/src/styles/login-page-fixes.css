@@ -1,0 +1,44 @@
+/**
+ * Fixes específicos para la página de login
+ * Previene scroll y asegura que todo quepa en la pantalla
+ */
+
+/* Prevenir scroll en la página de login */
+html.login-page-active {
+  overflow: hidden !important;
+  height: 100% !important;
+  position: fixed !important;
+  width: 100% !important;
+}
+
+body.login-page-active {
+  overflow: hidden !important;
+  height: 100vh !important;
+  position: fixed !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Asegurar que los inputs no se salgan */
+.login-input-wrapper,
+.login-input-wrapper * {
+  box-sizing: border-box !important;
+}
+
+.login-input-wrapper input,
+.login-input {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+/* Asegurar que el formulario no se salga */
+.login-form,
+.login-field,
+.login-card {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
