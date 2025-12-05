@@ -135,7 +135,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
     }
   };
 
-  const EmployeeForm = () => (
+  const renderEmployeeForm = () => (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -255,7 +255,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                   Complete los datos del nuevo trabajador
                 </DialogDescription>
               </DialogHeader>
-              <EmployeeForm />
+              {renderEmployeeForm()}
             </DialogContent>
           </Dialog>
           {/* Filtros */}
@@ -390,12 +390,15 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
           </div>
 
           {/* Dialog for editing employee */}
-          <Dialog open={!!editingUser} onOpenChange={(open) => {
-            if (!open) {
-              setEditingUser(null);
-              resetForm();
-            }
-          }}>
+          <Dialog 
+            open={!!editingUser} 
+            onOpenChange={(open) => {
+              if (!open) {
+                setEditingUser(null);
+                resetForm();
+              }
+            }}
+          >
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Editar Empleado</DialogTitle>
@@ -403,7 +406,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                   Modifica los datos del trabajador
                 </DialogDescription>
               </DialogHeader>
-              <EmployeeForm />
+              {renderEmployeeForm()}
             </DialogContent>
           </Dialog>
         </CardContent>

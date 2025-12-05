@@ -173,7 +173,7 @@ npm install
 
 Crea el archivo `backend/.env` con el siguiente contenido:
 
-```env
+```env 
 # Servidor
 PORT=4000
 NODE_ENV=development

@@ -14,12 +14,12 @@ import { AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ClockOutDialogProps {
-  open: boolean;
+  isOpen: boolean;
   onConfirm: (reason: string) => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
-export function ClockOutDialog({ open, onConfirm, onCancel }: ClockOutDialogProps) {
+export function ClockOutDialog({ isOpen, onConfirm, onClose }: ClockOutDialogProps) {
   const [reason, setReason] = useState('');
 
   const handleConfirm = () => {
@@ -36,11 +36,11 @@ export function ClockOutDialog({ open, onConfirm, onCancel }: ClockOutDialogProp
 
   const handleCancel = () => {
     setReason('');
-    onCancel();
+    onClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleCancel()}>
+    <Dialog open={isOpen} onOpenChange={(isOpen: boolean) => !isOpen && handleCancel()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-orange-600">

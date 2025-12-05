@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { 
   Clock, 
@@ -149,12 +150,14 @@ export function CollaboratorDashboard() {
    */
   const handleClockIn = async () => {
     try {
+      console.log('🔵 Intentando marcar entrada...');
       const ahora = new Date();
       const horaActual = ahora.toTimeString().slice(0, 5);
       const horaEntrada = (user as any)?.empleado?.hora_entrada || '09:00';
 
       // Calcular si llega tarde (> 15 minutos)
       const minutosTarde = calcularMinutosTarde(ahora, horaEntrada);
+      console.log('⏰ Minutos tarde:', minutosTarde);
 
       if (minutosTarde > 15) {
         // Mostrar diálogo de llegada tarde
@@ -168,7 +171,9 @@ export function CollaboratorDashboard() {
       }
 
       // Marcar entrada normal
+      console.log('📝 Llamando a marcarAsistencia()...');
       const res = await marcarAsistencia();
+      console.log('✅ Respuesta de marcarAsistencia:', res);
       
       if (res && res.success) {
         toast.success('Entrada registrada correctamente');
@@ -177,6 +182,8 @@ export function CollaboratorDashboard() {
         toast.warning('La petición se completó pero sin confirmación');
       }
     } catch (error: any) {
+      console.error('❌ Error al marcar entrada:', error);
+      console.error('Response data:', error.response?.data);
       toast.error(error.response?.data?.message || 'Error al marcar entrada');
     }
   };

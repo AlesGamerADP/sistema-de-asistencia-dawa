@@ -14,21 +14,21 @@ import { Clock, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface EarlyExitDialogProps {
-  open: boolean;
+  isOpen: boolean;
   scheduledTime: string;
   actualTime: string;
   minutesEarly: number;
   onConfirm: (reason: string) => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
 export function EarlyExitDialog({ 
-  open, 
+  isOpen, 
   scheduledTime, 
   actualTime, 
   minutesEarly,
   onConfirm, 
-  onCancel 
+  onClose 
 }: EarlyExitDialogProps) {
   const [reason, setReason] = useState('');
 
@@ -46,11 +46,11 @@ export function EarlyExitDialog({
 
   const handleCancel = () => {
     setReason('');
-    onCancel();
+    onClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleCancel()}>
+    <Dialog open={isOpen} onOpenChange={(isOpen: boolean) => !isOpen && handleCancel()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-purple-600">

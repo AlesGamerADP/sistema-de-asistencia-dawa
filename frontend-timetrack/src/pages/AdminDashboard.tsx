@@ -16,7 +16,7 @@ import { EmployeeManagement } from "../components/admin/EmployeesManagement";
 import ActiveRecordsView from "../components/admin/ActiveRecordsView";
 import DeletedRecordsView from "../components/admin/DeletedRecordsView";
 
-import { getUsuarios, getRegistros, getRegistrosEliminados } from "../api/admin";
+import { getUsuarios, getRegistros, getRegistrosEliminados, createEmpleado, updateEmpleado, deleteEmpleado, createUsuario, getDepartamentos } from "../api/admin";
 
 // ────────────────────────────────────────────────────────────
 // Types
@@ -34,6 +34,11 @@ interface Employee {
   name: string;
   email: string;
   role: string;
+  department?: string;
+  employmentType?: string;
+  scheduledStartTime?: string;
+  scheduledEndTime?: string;
+  empleado?: any;
 }
 
 interface SummaryItem {
@@ -164,6 +169,11 @@ export function AdminDashboard() {
           name,
           email,
           role: u.rol || "collaborator",
+          department: u.empleado?.departamento?.nombre,
+          employmentType: u.empleado?.puesto,
+          scheduledStartTime: u.empleado?.hora_entrada?.slice(0, 5),
+          scheduledEndTime: u.empleado?.hora_salida?.slice(0, 5),
+          empleado: u.empleado,
         };
       });
 
@@ -305,24 +315,95 @@ export function AdminDashboard() {
           {activeTab === "resumen" && <HoursSummary loading={loading} items={summary} />}
           {activeTab === "empleados" && (
             <EmployeeManagement 
-              users={employees.map(emp => ({
+              users={employees.map((emp) => ({
                 id: emp.id.toString(),
                 username: emp.email.split('@')[0] || `user${emp.id}`,
                 name: emp.name,
                 role: (emp.role === 'admin' ? 'supervisor' : 'employee') as 'employee' | 'supervisor',
-                department: undefined,
-                employmentType: undefined,
-                scheduledStartTime: undefined,
-                scheduledEndTime: undefined
+                department: emp.department,
+                employmentType: emp.employmentType,
+                scheduledStartTime: emp.scheduledStartTime,
+                scheduledEndTime: emp.scheduledEndTime
               }))}
-              onAddUser={(user) => {
-                toast.info('Función de agregar usuario en desarrollo');
+              onAddUser={async (user) => {
+                try {
+                  // 1. Crear empleado primero
+                  const empleadoData = {
+                    nombre: user.name.split(' ')[0] || user.name,
+                    apellido: user.name.split(' ').slice(1).join(' ') || '',
+                    puesto: user.employmentType || 'Empleado',
+                    fecha_contratacion: new Date().toISOString().split('T')[0],
+                    estado: 'activo',
+                    departamento_id: 1, // Ajustar según el departamento seleccionado
+                    hora_entrada: user.scheduledStartTime || '09:00:00',
+                    hora_salida: user.scheduledEndTime || '17:00:00'
+                  };
+                  
+                  const empleadoRes = await createEmpleado(empleadoData);
+                  
+                  if (empleadoRes.data && empleadoRes.data.data) {
+                    // 2. Crear usuario asociado al empleado
+                    const usuarioData = {
+                      username: user.username,
+                      contraseña: 'cambiarme123', // Contraseña temporal
+                      rol: user.role === 'supervisor' ? 'supervisor' : 'empleado',
+                      empleado_id: empleadoRes.data.data.id
+                    };
+                    
+                    await createUsuario(usuarioData);
+                    toast.success('Empleado y usuario creados exitosamente');
+                    await loadDashboardData();
+                  }
+                } catch (error: any) {
+                  console.error('Error al crear empleado:', error);
+                  toast.error(error.response?.data?.message || 'Error al crear empleado');
+                }
               }}
-              onUpdateUser={(userId, user) => {
-                toast.info('Función de actualizar usuario en desarrollo');
+              onUpdateUser={async (userId, userData) => {
+                try {
+                  // Buscar el empleado_id del usuario
+                  const usuario = employees.find((emp: any) => emp.id?.toString() === userId);
+                  
+                  if (!usuario) {
+                    toast.error('Usuario no encontrado');
+                    return;
+                  }
+                  
+                  // Actualizar datos del empleado
+                  const updateData: any = {};
+                  
+                  if (userData.name) {
+                    updateData.nombre = userData.name.split(' ')[0] || userData.name;
+                    updateData.apellido = userData.name.split(' ').slice(1).join(' ') || '';
+                  }
+                  if (userData.employmentType) updateData.puesto = userData.employmentType;
+                  if (userData.scheduledStartTime) updateData.hora_entrada = userData.scheduledStartTime + ':00';
+                  if (userData.scheduledEndTime) updateData.hora_salida = userData.scheduledEndTime + ':00';
+                  
+                  await updateEmpleado(usuario.id, updateData);
+                  toast.success('Empleado actualizado exitosamente');
+                  await loadDashboardData();
+                } catch (error: any) {
+                  console.error('Error al actualizar empleado:', error);
+                  toast.error(error.response?.data?.message || 'Error al actualizar empleado');
+                }
               }}
-              onDeleteUser={(userId) => {
-                toast.info('Función de eliminar usuario en desarrollo');
+              onDeleteUser={async (userId) => {
+                try {
+                  const usuario = employees.find((emp: any) => emp.id?.toString() === userId);
+                  
+                  if (!usuario) {
+                    toast.error('Usuario no encontrado');
+                    return;
+                  }
+                  
+                  await deleteEmpleado(usuario.id);
+                  toast.success('Empleado eliminado exitosamente');
+                  await loadDashboardData();
+                } catch (error: any) {
+                  console.error('Error al eliminar empleado:', error);
+                  toast.error(error.response?.data?.message || 'Error al eliminar empleado');
+                }
               }}
             />
           )}

@@ -14,21 +14,21 @@ import { Clock, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface LateArrivalDialogProps {
-  open: boolean;
+  isOpen: boolean;
   scheduledTime: string;
   actualTime: string;
   minutesLate: number;
   onConfirm: (reason: string) => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
 export function LateArrivalDialog({ 
-  open, 
+  isOpen, 
   scheduledTime, 
   actualTime, 
   minutesLate,
   onConfirm, 
-  onCancel 
+  onClose 
 }: LateArrivalDialogProps) {
   const [reason, setReason] = useState('');
 
@@ -46,11 +46,11 @@ export function LateArrivalDialog({
 
   const handleCancel = () => {
     setReason('');
-    onCancel();
+    onClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen: boolean) => !isOpen && handleCancel()}>
+    <Dialog open={isOpen} onOpenChange={(isOpen: boolean) => !isOpen && handleCancel()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-orange-600">
