@@ -65,12 +65,25 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
+    
+    // Validar que el departamento esté en la lista de departamentos válidos
+    const validDepartment: typeof departments[number] | '' = 
+      user.department && departments.includes(user.department as typeof departments[number])
+        ? (user.department as typeof departments[number])
+        : '';
+    
+    // Validar que el tipo de empleo esté en la lista de tipos válidos
+    const validEmploymentType: typeof employmentTypes[number] | '' = 
+      user.employmentType && employmentTypes.includes(user.employmentType as typeof employmentTypes[number])
+        ? (user.employmentType as typeof employmentTypes[number])
+        : '';
+    
     setFormData({
       username: user.username,
       name: user.name,
       role: user.role,
-      department: user.department || '',
-      employmentType: user.employmentType || '',
+      department: validDepartment,
+      employmentType: validEmploymentType,
       scheduledStartTime: user.scheduledStartTime || '09:00',
       scheduledEndTime: user.scheduledEndTime || '17:00'
     });

@@ -53,6 +53,9 @@ export function Button({
   const variantStyles = variants[variant] || variants.default;
   const sizeStyles = sizes[size] || sizes.default;
   
+  // Excluir onDrag de las props para evitar conflicto con Framer Motion
+  const { onDrag, ...restProps } = props as any;
+  
   return (
     <motion.button
       type={type}
@@ -62,7 +65,7 @@ export function Button({
       whileTap={{ scale: disabled ? 1 : 0.98 }}
       whileHover={{ scale: disabled ? 1 : 1.02, y: -1 }}
       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-      {...props}
+      {...restProps}
     >
       {children}
     </motion.button>

@@ -1,8 +1,26 @@
-// src/components/admin/HoursSummary.js
+// src/components/admin/HoursSummary.tsx
 import { ProgressBar } from "../ui/ProgressBar";
 import { Clock, Calendar, TrendingUp, CheckCircle2 } from 'lucide-react';
 
-export default function HoursSummary({ loading, items = [] }) {
+interface SummaryItem {
+  id: string | number;
+  initials: string;
+  name: string;
+  contract: string;
+  rank: number;
+  weekHours: number;
+  weekTarget: number;
+  monthHours: number;
+  monthTarget: number;
+  weekGoalOk: boolean;
+}
+
+interface HoursSummaryProps {
+  loading: boolean;
+  items?: SummaryItem[];
+}
+
+export default function HoursSummary({ loading, items = [] }: HoursSummaryProps) {
   if (loading) {
     return <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 text-gray-900 dark:text-gray-100">Cargando resumen…</div>;
   }
@@ -48,29 +66,22 @@ export default function HoursSummary({ loading, items = [] }) {
           {/* Progress bars */}
           <div className="mt-4 sm:mt-5 space-y-3 sm:space-y-4">
             <div>
-              <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700 dark:text-gray-300 font-medium">
-                  <Clock size={14} className="sm:w-4 sm:h-4 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
-                  <span>Esta Semana</span>
-                </div>
-                <span className="text-gray-900 dark:text-white font-semibold whitespace-nowrap">
-                  {emp.weekHours} / {emp.weekTarget} hrs
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Semana</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {emp.weekHours.toFixed(1)} / {emp.weekTarget} hrs
                 </span>
               </div>
-              <ProgressBar value={emp.weekHours} total={emp.weekTarget} />
+              <ProgressBar value={(emp.weekHours / emp.weekTarget) * 100} className="" />
             </div>
-
             <div>
-              <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700 dark:text-gray-300 font-medium">
-                  <Calendar size={14} className="sm:w-4 sm:h-4 text-purple-500 dark:text-purple-400 flex-shrink-0" />
-                  <span>Este Mes</span>
-                </div>
-                <span className="text-gray-900 dark:text-white font-semibold whitespace-nowrap">
-                  {emp.monthHours} / {emp.monthTarget} hrs
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mes</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {emp.monthHours.toFixed(1)} / {emp.monthTarget} hrs
                 </span>
               </div>
-              <ProgressBar value={emp.monthHours} total={emp.monthTarget} />
+              <ProgressBar value={(emp.monthHours / emp.monthTarget) * 100} className="" />
             </div>
           </div>
         </div>
@@ -78,3 +89,4 @@ export default function HoursSummary({ loading, items = [] }) {
     </section>
   );
 }
+

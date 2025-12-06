@@ -183,7 +183,7 @@ export function AdminDashboard() {
       );
 
       // Activos = entrada sin salida (si tu modelo los maneja así)
-      const active = registros.filter((r) => r.entrada && !r.salida);
+      const active = registros.filter((r: NormalizedRegistro) => r.entrada && !r.salida);
 
       // -------- REGISTROS ELIMINADOS
       const eliminados = eliminadosRes.data?.data || eliminadosRes.data || [];
@@ -198,7 +198,7 @@ export function AdminDashboard() {
         if (!mapEmp.has(empKey)) {
           const initials = (r.nombre || "EM")
             .split(" ")
-            .map((s) => s[0])
+            .map((s: string) => s[0])
             .join("")
             .slice(0, 2)
             .toUpperCase();
@@ -224,15 +224,15 @@ export function AdminDashboard() {
         if (isThisMonth(r.entrada)) item.monthHours += h;
       }
 
-      const summaryArr = Array.from(mapEmp.values())
-        .map((x) => ({
+      const summaryArr: SummaryItem[] = Array.from(mapEmp.values())
+        .map((x: SummaryItem) => ({
           ...x,
           weekHours: +x.weekHours.toFixed(1),
           monthHours: +x.monthHours.toFixed(1),
           weekGoalOk: x.weekHours >= x.weekTarget,
         }))
-        .sort((a, b) => b.weekHours - a.weekHours)
-        .map((x, i) => ({ ...x, rank: i + 1 }));
+        .sort((a: SummaryItem, b: SummaryItem) => b.weekHours - a.weekHours)
+        .map((x: SummaryItem, i: number) => ({ ...x, rank: i + 1 }));
 
       // -------- STATS
       const statsComputed: Stats = {
@@ -242,7 +242,7 @@ export function AdminDashboard() {
       };
 
       // -------- TABLAS
-      const activeLogsRows = active.map((r) => ({
+      const activeLogsRows = active.map((r: NormalizedRegistro) => ({
         id: r.raw?.id || `${r.empleadoId}-${r.entrada?.toISOString?.()}`,
         name: r.nombre,
         date: r.entrada?.toLocaleString?.() || "",

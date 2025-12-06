@@ -85,7 +85,7 @@ const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await apiLogin(username, password, roleType);
+          const response: any = await apiLogin(username, password, roleType);
           
           if (response.success && response.data) {
             const { user } = response.data;
@@ -142,13 +142,13 @@ const useAuthStore = create<AuthState>()(
        * Restaura la sesión desde localStorage si existe
        */
       checkSession: () => {
-        const user = getCurrentUser();
+        const user = getCurrentUser() as User | null;
         const token = localStorage.getItem('authToken');
         
         if (user && token) {
           set({
             user,
-            role: user.rol,
+            role: user.rol || null,
             isAuthenticated: true,
             error: null
           });

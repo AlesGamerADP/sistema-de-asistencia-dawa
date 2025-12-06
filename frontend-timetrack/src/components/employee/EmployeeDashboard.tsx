@@ -70,8 +70,8 @@ export function EmployeeDashboard({ user, timeEntries, onLogout, onClockIn, onCl
   const activeEntries = timeEntries.filter(e => !e.deleted);
   const today = new Date().toISOString().split('T')[0];
   const todayEntry = activeEntries.find(e => e.date === today);
-  const hasClockIn = todayEntry && !todayEntry.endTime;
-  const hasCompleted = todayEntry && todayEntry.endTime;
+  const hasClockIn = Boolean(todayEntry && !todayEntry.endTime);
+  const hasCompleted = Boolean(todayEntry && todayEntry.endTime);
 
   const handleClockInClick = () => {
     if (hasClockIn || hasCompleted) {
@@ -267,7 +267,7 @@ export function EmployeeDashboard({ user, timeEntries, onLogout, onClockIn, onCl
               </Button>
             </div>
 
-            {hasCompleted && (
+            {hasCompleted && todayEntry && (
               <div className="text-center p-4 bg-green-100 rounded-lg border border-green-300">
                 <p className="text-green-800">
                   ✓ Has completado tu registro de hoy ({todayEntry.totalHours} horas)
@@ -361,19 +361,19 @@ export function EmployeeDashboard({ user, timeEntries, onLogout, onClockIn, onCl
 
       {/* Dialogs */}
       <ClockOutDialog
-        open={showClockOutDialog}
+        isOpen={showClockOutDialog}
         onConfirm={handleClockOutWithIncident}
-        onCancel={() => setShowClockOutDialog(false)}
+        onClose={() => setShowClockOutDialog(false)}
       />
 
       {lateArrivalInfo && (
         <LateArrivalDialog
-          open={showLateArrivalDialog}
+          isOpen={showLateArrivalDialog}
           scheduledTime={lateArrivalInfo.scheduledTime}
           actualTime={lateArrivalInfo.actualTime}
           minutesLate={lateArrivalInfo.minutesLate}
           onConfirm={handleLateArrivalConfirm}
-          onCancel={() => {
+          onClose={() => {
             setShowLateArrivalDialog(false);
             setLateArrivalInfo(null);
           }}
@@ -382,12 +382,12 @@ export function EmployeeDashboard({ user, timeEntries, onLogout, onClockIn, onCl
 
       {earlyExitInfo && (
         <EarlyExitDialog
-          open={showEarlyExitDialog}
+          isOpen={showEarlyExitDialog}
           scheduledTime={earlyExitInfo.scheduledTime}
           actualTime={earlyExitInfo.actualTime}
           minutesEarly={earlyExitInfo.minutesEarly}
           onConfirm={handleEarlyExitConfirm}
-          onCancel={() => {
+          onClose={() => {
             setShowEarlyExitDialog(false);
             setEarlyExitInfo(null);
           }}
