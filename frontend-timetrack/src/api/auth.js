@@ -136,11 +136,15 @@ export const login = async (username, contraseña, role = 'colaborador') => {
 
     // Intentar login con el backend primero
     try {
+      console.log('🔐 Intentando login:', { username, role: backendRole });
+      
       const response = await apiClient.post('/usuarios/login', {
         username,
         contraseña,
         role: backendRole  // Enviar el rol mapeado
       });
+
+      console.log('✅ Login exitoso:', response.data);
 
       const { data } = response;
 
@@ -152,6 +156,18 @@ export const login = async (username, contraseña, role = 'colaborador') => {
 
       return data;
     } catch (backendError) {
+      console.error('❌ Error en login:', {
+        status: backendError.response?.status,
+        statusText: backendError.response?.statusText,
+        message: backendError.message,
+        data: backendError.response?.data
+      });
+
+      // Si es error 403, mostrar mensaje específico
+      if (backendError.response?.status === 403) {
+        throw new Error('Acceso denegado. Verifica tus credenciales o contacta al administrador.');
+      }
+
       // Si el backend no está disponible o hay error de red, usar usuarios mock (solo en desarrollo)
       if (isDevelopment && (backendError.code === 'ECONNABORTED' || backendError.message === 'Network Error')) {
         console.warn('⚠️ Backend no disponible. Usando usuarios de prueba locales...');

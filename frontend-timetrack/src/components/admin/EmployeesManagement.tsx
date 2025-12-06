@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Pagination } from '../ui/pagination';
 
 // Tipos locales (temporalmente, hasta que se definan en un archivo de tipos compartido)
 interface User {
@@ -37,6 +38,8 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [employmentFilter, setEmploymentFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 7;
 
   const [formData, setFormData] = useState({
     username: '',
@@ -124,6 +127,18 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
       return matchesSearch && matchesDepartment && matchesEmployment;
     });
   }, [employees, searchTerm, departmentFilter, employmentFilter]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredEmployees.length / ITEMS_PER_PAGE);
+  const paginatedEmployees = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredEmployees.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredEmployees, currentPage]);
+
+  // Reset to page 1 when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchTerm, departmentFilter, employmentFilter]);
 
   const getDepartmentColor = (department?: string) => {
     switch (department) {
@@ -318,14 +333,14 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredEmployees.length === 0 ? (
+                {paginatedEmployees.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                       No se encontraron empleados
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredEmployees.map(user => (
+                  paginatedEmployees.map(user => (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -378,11 +393,17 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
             </Table>
           </div>
 
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            totalItems={filteredEmployees.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
+
           {/* Resumen */}
           <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-            <div>
-              Mostrando {filteredEmployees.length} de {employees.length} empleados
-            </div>
             <div className="flex gap-4">
               <span>Full-time: {employees.filter(e => e.employmentType === 'Full-time').length}</span>
               <span>Part-time: {employees.filter(e => e.employmentType === 'Part-time').length}</span>

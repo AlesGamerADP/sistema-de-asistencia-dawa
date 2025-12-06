@@ -22,7 +22,9 @@ import {
   ChevronDown,
   ChevronUp,
   Filter,
-  RefreshCw
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { restaurarRegistro, eliminarRegistroPermanente } from '../../api/admin';
@@ -35,6 +37,8 @@ export function DeletedRecordsView({ loading, records, onRefresh }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 7;
 
   // Auto-refresh cada 30 segundos
   useEffect(() => {
@@ -93,6 +97,18 @@ export function DeletedRecordsView({ loading, records, onRefresh }) {
 
     return filtered;
   }, [records, searchTerm, filterDate, sortBy]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredRecords.length / ITEMS_PER_PAGE);
+  const paginatedRecords = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredRecords.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredRecords, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterDate, sortBy]);
 
   const handleRestore = async (id) => {
     if (!window.confirm('¿Deseas restaurar este registro?')) return;
@@ -295,7 +311,7 @@ export function DeletedRecordsView({ loading, records, onRefresh }) {
       {/* Lista de registros */}
       <div className="space-y-3">
         <AnimatePresence>
-          {filteredRecords.length === 0 ? (
+          {paginatedRecords.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -307,7 +323,7 @@ export function DeletedRecordsView({ loading, records, onRefresh }) {
               </p>
             </motion.div>
           ) : (
-            filteredRecords.map((record, index) => (
+            paginatedRecords.map((record, index) => (
               <motion.div
                 key={record.id}
                 initial={{ opacity: 0, y: 20 }}

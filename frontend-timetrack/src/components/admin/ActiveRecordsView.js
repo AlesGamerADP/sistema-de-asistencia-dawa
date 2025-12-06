@@ -20,7 +20,9 @@ import {
   ChevronDown,
   ChevronUp,
   Filter,
-  RefreshCw
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { deleteRegistro } from '../../api/admin';
@@ -34,6 +36,8 @@ export function ActiveRecordsView({ loading, records, onRefresh }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 7;
 
   // Auto-refresh cada 30 segundos
   useEffect(() => {
@@ -92,6 +96,18 @@ export function ActiveRecordsView({ loading, records, onRefresh }) {
 
     return filtered;
   }, [records, searchTerm, filterDate, sortBy]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredRecords.length / ITEMS_PER_PAGE);
+  const paginatedRecords = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredRecords.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredRecords, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterDate, sortBy]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Estás seguro de eliminar este registro?')) return;
@@ -247,15 +263,15 @@ export function ActiveRecordsView({ loading, records, onRefresh }) {
       {/* Contador de resultados */}
       <div className="flex items-center justify-between px-4">
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Mostrando <span className="font-semibold text-gray-900 dark:text-white">{filteredRecords.length}</span> de{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">{records.length}</span> registros
+          Mostrando <span className="font-semibold text-gray-900 dark:text-white">{paginatedRecords.length}</span> de{' '}
+          <span className="font-semibold text-gray-900 dark:text-white">{filteredRecords.length}</span> registros
         </p>
       </div>
 
       {/* Lista de registros */}
       <div className="space-y-3">
         <AnimatePresence>
-          {filteredRecords.length === 0 ? (
+          {paginatedRecords.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -267,7 +283,7 @@ export function ActiveRecordsView({ loading, records, onRefresh }) {
               </p>
             </motion.div>
           ) : (
-            filteredRecords.map((record, index) => (
+            paginatedRecords.map((record, index) => (
               <motion.div
                 key={record.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -372,6 +388,89 @@ export function ActiveRecordsView({ loading, records, onRefresh }) {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+          <div className="flex-1 flex justify-between sm:hidden">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Siguiente
+            </button>
+          </div>
+          
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                Mostrando <span className="font-medium">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> a{' '}
+                <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredRecords.length)}</span> de{' '}
+                <span className="font-medium">{filteredRecords.length}</span> resultados
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Anterior
+              </button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`min-w-[2.5rem] px-3 py-2 text-sm rounded-lg ${
+                          currentPage === page
+                            ? 'bg-blue-600 text-white'
+                            : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (page === currentPage - 2 || page === currentPage + 2) {
+                    return (
+                      <span key={page} className="px-2 text-gray-500">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+              
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+              >
+                Siguiente
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

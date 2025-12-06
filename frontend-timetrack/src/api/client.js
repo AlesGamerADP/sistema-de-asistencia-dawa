@@ -57,8 +57,13 @@ client.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Manejar errores HTTP
-    if (error.response.status === 401) {
+    // Manejar errores HTTP específicos
+    if (error.response.status === 403) {
+      console.error('🚫 Error 403: Acceso denegado');
+      console.error('URL:', error.config?.url);
+      console.error('Data:', error.response?.data);
+      // No mostrar toast aquí, dejar que lo maneje el componente
+    } else if (error.response.status === 401) {
       // Limpiar tokens
       localStorage.removeItem('authToken');
       localStorage.removeItem('authUser');
@@ -73,6 +78,9 @@ client.interceptors.response.use(
       if (typeof window !== 'undefined') {
         window.location.href = '/';
       }
+    } else if (error.response.status === 429) {
+      console.error('⏰ Error 429: Demasiadas peticiones');
+      toast.error('Demasiadas peticiones. Espera un momento e intenta de nuevo.');
     }
     return Promise.reject(error);
   }
