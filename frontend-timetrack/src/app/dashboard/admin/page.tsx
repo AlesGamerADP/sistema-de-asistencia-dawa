@@ -337,7 +337,7 @@ export default function AdminDashboardPage() {
               }))}
               onAddUser={async (user) => {
                 try {
-                  // 1. Crear empleado primero
+                  // El backend crea el empleado Y el usuario en una transacción
                   const empleadoData = {
                     nombre: user.name.split(' ')[0] || user.name,
                     apellido: user.name.split(' ').slice(1).join(' ') || '',
@@ -346,22 +346,15 @@ export default function AdminDashboardPage() {
                     estado: 'activo',
                     departamento_id: 1, // Ajustar según el departamento seleccionado
                     hora_entrada: user.scheduledStartTime || '09:00:00',
-                    hora_salida: user.scheduledEndTime || '17:00:00'
+                    hora_salida: user.scheduledEndTime || '17:00:00',
+                    username: user.username,
+                    password: user.password || 'cambiarme123'
                   };
                   
-                  const empleadoRes = await createEmpleado(empleadoData);
+                  const response = await createEmpleado(empleadoData);
                   
-                  if (empleadoRes.data && empleadoRes.data.data) {
-                    // 2. Crear usuario asociado al empleado
-                    const usuarioData = {
-                      username: user.username,
-                      contraseña: 'cambiarme123', // Contraseña temporal
-                      rol: user.role === 'supervisor' ? 'supervisor' : 'empleado',
-                      empleado_id: empleadoRes.data.data.id
-                    };
-                    
-                    await createUsuario(usuarioData);
-                    toast.success('Empleado y usuario creados exitosamente');
+                  if (response.data) {
+                    toast.success('Empleado creado exitosamente');
                     await loadDashboardData();
                   }
                 } catch (error: any) {

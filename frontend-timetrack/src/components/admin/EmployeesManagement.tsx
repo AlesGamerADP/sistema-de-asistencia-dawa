@@ -13,6 +13,7 @@ import { Pagination } from '../ui/pagination';
 interface User {
   id: string;
   username: string;
+  password?: string;
   name: string;
   role: 'employee' | 'supervisor';
   department?: string;
@@ -43,6 +44,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
 
   const [formData, setFormData] = useState({
     username: '',
+    password: '',
     name: '',
     role: 'employee' as 'employee' | 'supervisor',
     department: '' as typeof departments[number] | '',
@@ -54,6 +56,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
   const resetForm = () => {
     setFormData({
       username: '',
+      password: '',
       name: '',
       role: 'employee',
       department: '',
@@ -80,6 +83,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
     
     setFormData({
       username: user.username,
+      password: '',
       name: user.name,
       role: user.role,
       department: validDepartment,
@@ -103,6 +107,11 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
       return;
     }
 
+    if (!editingUser && !formData.password) {
+      alert('La contraseña es requerida para nuevos empleados');
+      return;
+    }
+
     if (editingUser) {
       onUpdateUser(editingUser.id, {
         name: formData.name,
@@ -115,6 +124,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
     } else {
       onAddUser({
         username: formData.username,
+        password: formData.password,
         name: formData.name,
         role: formData.role,
         department: formData.department as typeof departments[number],
@@ -187,6 +197,20 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
           />
         </div>
       </div>
+
+      {!editingUser && (
+        <div className="space-y-2">
+          <Label htmlFor="password">Contraseña *</Label>
+          <Input
+            id="password"
+            type="password"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            placeholder="Mínimo 6 caracteres"
+            minLength={6}
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
