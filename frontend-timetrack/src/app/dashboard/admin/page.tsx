@@ -1,24 +1,21 @@
-/**
- * AdminDashboard - Panel de Administrador (derivado de /usuarios y /registros)
- */
-
 'use client';
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import useAuthStore from "../store/useAuthStore";
+import useAuthStore from "../../../store/useAuthStore";
 
-import AdminTopbar from "../components/layout/AdminTopbar";
-import StatsHeader from "../components/admin/StatsHeader";
-import Tabs from "../components/admin/Tabs";
-import HoursSummary from "../components/admin/HoursSummary";
-import EmployeesTable from "../components/admin/EmployeesTable";
-import { EmployeeManagement } from "../components/admin/EmployeesManagement";
-import ActiveRecordsView from "../components/admin/ActiveRecordsView";
-import DeletedRecordsView from "../components/admin/DeletedRecordsView";
+import AdminTopbar from "../../../components/layout/AdminTopbar";
+import StatsHeader from "../../../components/admin/StatsHeader";
+import Tabs from "../../../components/admin/Tabs";
+import HoursSummary from "../../../components/admin/HoursSummary";
+import EmployeesTable from "../../../components/admin/EmployeesTable";
+import { EmployeeManagement } from "../../../components/admin/EmployeesManagement";
+import ActiveRecordsView from "../../../components/admin/ActiveRecordsView";
+import DeletedRecordsView from "../../../components/admin/DeletedRecordsView";
 
-import { getUsuarios, getRegistros, getRegistrosEliminados, createEmpleado, updateEmpleado, deleteEmpleado, createUsuario, getDepartamentos } from "../api/admin";
+import { getUsuarios, getRegistros, getRegistrosEliminados, createEmpleado, updateEmpleado, deleteEmpleado, createUsuario, getDepartamentos } from "../../../api/admin";
 
 // ────────────────────────────────────────────────────────────
 // Types
@@ -135,7 +132,8 @@ function isThisMonth(d: Date | null): boolean {
 // ────────────────────────────────────────────────────────────
 // Componente
 // ────────────────────────────────────────────────────────────
-export function AdminDashboard() {
+export default function AdminDashboardPage() {
+  const router = useRouter();
   const { user, role, isAuthenticated } = useAuthStore();
 
   const [loading, setLoading] = useState(true);
@@ -265,12 +263,22 @@ export function AdminDashboard() {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Verificar autenticación y rol
+    if (!isAuthenticated) {
+      router.replace('/');
+      return;
+    }
+    
+    if (role !== "admin" && role !== "supervisor") {
+      router.replace('/dashboard/colaborador');
+      return;
+    }
+    
     let mounted = true;
 
     (async () => {
-      if (!isAuthenticated) return;
-      if (role !== "admin" && role !== "supervisor") return;
-
       setLoading(true);
       await loadDashboardData();
       if (mounted) setLoading(false);
@@ -279,7 +287,7 @@ export function AdminDashboard() {
     return () => {
       mounted = false;
     };
-  }, [isAuthenticated, role]);
+  }, [isAuthenticated, role, router]);
 
   return (
     <motion.div 
@@ -428,7 +436,4 @@ export function AdminDashboard() {
     </motion.div>
   );
 }
-
-// Export default para React Router (no para Next.js)
-export default AdminDashboard;
 

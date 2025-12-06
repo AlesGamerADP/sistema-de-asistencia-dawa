@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from 'sonner';
 import "./globals.css";
 import "../styles/login.css";
 import "../styles/background-transition.css";
@@ -12,8 +13,9 @@ export const metadata: Metadata = {
   description: "Sistema de control de asistencias y gestión de empleados",
 };
 
-// Forzar renderizado dinámico
+// Habilitar SSR
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function RootLayout({
   children,
@@ -24,6 +26,13 @@ export default function RootLayout({
     <html lang="es">
       <body>
         {children}
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          duration={3000}
+          expand={false}
+        />
       </body>
     </html>
   );

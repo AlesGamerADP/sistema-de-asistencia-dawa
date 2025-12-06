@@ -2,17 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Usar SSR (Server-Side Rendering)
   output: 'standalone',
-  // Deshabilitar generación estática
   trailingSlash: false,
-  async redirects() {
-    return [
-      {
-        source: '/dashboard/:path*',
-        destination: '/',
-        permanent: false,
-      },
-    ];
+  // Habilitar SSR
+  async generateBuildId() {
+    return `build-${Date.now()}`;
   },
 };
 

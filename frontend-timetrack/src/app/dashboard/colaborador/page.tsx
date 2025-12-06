@@ -1,15 +1,7 @@
-/**
- * CollaboratorDashboard - Panel de Colaborador
- * 
- * Vista principal para empleados/colaboradores con control de asistencia
- * 
- * @module pages/CollaboratorDashboard
- */
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { 
@@ -23,8 +15,8 @@ import {
   LogIn,
   LogOutIcon
 } from 'lucide-react';
-import useAuthStore from '../store/useAuthStore';
-import { Button } from '../components/ui/button';
+import useAuthStore from '../../../store/useAuthStore';
+import { Button } from '../../../components/ui/button';
 import { 
   marcarAsistencia, 
   getEstadoActual, 
@@ -32,11 +24,11 @@ import {
   marcarEntradaJustificada,
   marcarSalidaJustificada,
   marcarSalidaIncidente
-} from '../api/employee';
-import { ClockOutDialog } from '../components/employee/ClockOutDialog';
-import { LateArrivalDialog } from '../components/employee/LateArrivalDialog';
-import { EarlyExitDialog } from '../components/employee/EarlyExitDialog';
-import { HistoryTable } from '../components/employee/HistoryTable';
+} from '../../../api/employee';
+import { ClockOutDialog } from '../../../components/employee/ClockOutDialog';
+import { LateArrivalDialog } from '../../../components/employee/LateArrivalDialog';
+import { EarlyExitDialog } from '../../../components/employee/EarlyExitDialog';
+import { HistoryTable } from '../../../components/employee/HistoryTable';
 
 interface RegistroHoy {
   hora_entrada?: string;
@@ -57,8 +49,8 @@ interface EarlyExitInfo {
   minutesEarly: number;
 }
 
-export function CollaboratorDashboard() {
-  const navigate = useNavigate();
+export default function CollaboratorDashboardPage() {
+  const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
   
   // Estados
@@ -78,16 +70,18 @@ export function CollaboratorDashboard() {
    * Verificar autenticación
    */
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (typeof window !== 'undefined' && !isAuthenticated) {
       toast.error('Debes iniciar sesión');
-      navigate('/', { replace: true });
+      router.replace('/');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, router]);
 
   /**
    * Actualizar hora actual cada segundo
    */
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -98,7 +92,9 @@ export function CollaboratorDashboard() {
    * Cargar datos del dashboard
    */
   useEffect(() => {
-    loadDashboardData();
+    if (typeof window !== 'undefined') {
+      loadDashboardData();
+    }
   }, []);
 
   /**
@@ -291,7 +287,7 @@ export function CollaboratorDashboard() {
   const handleLogout = async () => {
     await logout();
     toast.success('Sesión cerrada correctamente');
-    navigate('/', { replace: true });
+    router.replace('/');
   };
 
   return (
@@ -500,7 +496,4 @@ export function CollaboratorDashboard() {
     </motion.div>
   );
 }
-
-// Export default para React Router (no para Next.js)
-export default CollaboratorDashboard;
 
