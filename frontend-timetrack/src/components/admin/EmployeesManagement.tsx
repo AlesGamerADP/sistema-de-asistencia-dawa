@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../ui/alert-dialog';
 import { Pagination } from '../ui/pagination';
 
 // Tipos locales (temporalmente, hasta que se definan en un archivo de tipos compartido)
@@ -37,6 +38,7 @@ const employmentTypes = ['Full-time', 'Part-time'] as const;
 export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUser }: EmployeeManagementProps) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{ show: boolean; userId: string; userName: string } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [employmentFilter, setEmploymentFilter] = useState<string>('all');
@@ -96,8 +98,13 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
   };
 
   const handleDelete = (userId: string, userName: string) => {
-    if (confirm(`¿Estás seguro de eliminar a ${userName}?`)) {
-      onDeleteUser(userId);
+    setDeleteConfirmation({ show: true, userId, userName });
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirmation) {
+      onDeleteUser(deleteConfirmation.userId);
+      setDeleteConfirmation(null);
     }
   };
 
@@ -495,6 +502,35 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
               {renderEmployeeForm()}
             </DialogContent>
           </Dialog>
+
+          {/* Alert Dialog para confirmación de eliminación */}
+          <AlertDialog open={deleteConfirmation?.show || false} onOpenChange={(open) => !open && setDeleteConfirmation(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Estás seguro de eliminar este empleado?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta acción eliminará permanentemente a <strong>{deleteConfirmation?.userName}</strong> de la base de datos.
+                  <br /><br />
+                  Se eliminarán también:
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>Su usuario asociado</li>
+                    <li>Todos sus registros de asistencia</li>
+                  </ul>
+                  <br />
+                  <span className="text-red-600 font-semibold">Esta acción no se puede deshacer.</span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={confirmDelete}
+                  className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                >
+                  Eliminar permanentemente
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </div>

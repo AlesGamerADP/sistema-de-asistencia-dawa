@@ -147,13 +147,15 @@ export default function AdminDashboardPage() {
   const [deletedLogs, setDeletedLogs] = useState<any[]>([]);
   const [activeRecords, setActiveRecords] = useState<any[]>([]);
   const [deletedRecords, setDeletedRecords] = useState<any[]>([]);
+  const [departamentos, setDepartamentos] = useState<any[]>([]);
 
   const loadDashboardData = async () => {
     try {
-      const [usuariosRes, registrosRes, eliminadosRes] = await Promise.all([
+      const [usuariosRes, registrosRes, eliminadosRes, departamentosRes] = await Promise.all([
         getUsuarios(),
         getRegistros(),
-        getRegistrosEliminados()
+        getRegistrosEliminados(),
+        getDepartamentos()
       ]);
 
       // -------- USUARIOS
@@ -255,6 +257,7 @@ export default function AdminDashboardPage() {
       setActiveRecords(registrosRes.data?.data || registrosRes.data || []);
       setDeletedRecords(eliminados);
       setStats(statsComputed);
+      setDepartamentos(departamentosRes.data || []);
     } catch (e) {
       console.error(e);
       toast.error("No se pudieron cargar los datos del panel");
@@ -337,6 +340,16 @@ export default function AdminDashboardPage() {
               }))}
               onAddUser={async (user) => {
                 try {
+                  // Buscar el ID del departamento por nombre
+                  const departamento = departamentos.find(
+                    (d: any) => d.nombre === user.department
+                  );
+                  
+                  if (!departamento) {
+                    toast.error('Departamento no encontrado');
+                    return;
+                  }
+
                   // El backend crea el empleado Y el usuario en una transacción
                   const empleadoData = {
                     nombre: user.name.split(' ')[0] || user.name,
@@ -344,7 +357,7 @@ export default function AdminDashboardPage() {
                     puesto: user.employmentType || 'Empleado',
                     fecha_contratacion: new Date().toISOString().split('T')[0],
                     estado: 'activo',
-                    departamento_id: 1, // Ajustar según el departamento seleccionado
+                    departamento_id: departamento.id,
                     hora_entrada: user.scheduledStartTime || '09:00:00',
                     hora_salida: user.scheduledEndTime || '17:00:00',
                     username: user.username,
@@ -378,6 +391,15 @@ export default function AdminDashboardPage() {
                   if (userData.name) {
                     updateData.nombre = userData.name.split(' ')[0] || userData.name;
                     updateData.apellido = userData.name.split(' ').slice(1).join(' ') || '';
+                  }
+                  if (userData.department) {
+                    // Buscar el ID del departamento por nombre
+                    const departamento = departamentos.find(
+                      (d: any) => d.nombre === userData.department
+                    );
+                    if (departamento) {
+                      updateData.departamento_id = departamento.id;
+                    }
                   }
                   if (userData.employmentType) updateData.puesto = userData.employmentType;
                   if (userData.scheduledStartTime) updateData.hora_entrada = userData.scheduledStartTime + ':00';
