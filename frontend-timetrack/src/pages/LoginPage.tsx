@@ -6,6 +6,8 @@
  * @module pages/LoginPage
  */
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,13 +31,15 @@ export function LoginPage() {
    * Prevenir scroll en la página de login
    */
   useEffect(() => {
-    document.documentElement.classList.add('login-page-active');
-    document.body.classList.add('login-page-active');
-    
-    return () => {
-      document.documentElement.classList.remove('login-page-active');
-      document.body.classList.remove('login-page-active');
-    };
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.add('login-page-active');
+      document.body.classList.add('login-page-active');
+      
+      return () => {
+        document.documentElement.classList.remove('login-page-active');
+        document.body.classList.remove('login-page-active');
+      };
+    }
   }, []);
 
   /**

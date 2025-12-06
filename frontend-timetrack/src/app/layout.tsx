@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   description: "Sistema de control de asistencias y gestión de empleados",
 };
 
+// Forzar renderizado dinámico
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({
   children,
 }: Readonly<{
