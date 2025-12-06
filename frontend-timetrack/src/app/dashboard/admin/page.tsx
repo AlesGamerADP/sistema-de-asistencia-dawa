@@ -397,7 +397,7 @@ export default function AdminDashboardPage() {
                     return;
                   }
                   
-                  // Eliminar del backend (soft delete: estado -> inactivo)
+                  // Eliminar permanentemente del backend (empleado + usuario + registros)
                   await deleteEmpleado(usuario.id);
                   
                   // Recargar datos para reflejar el cambio

@@ -248,26 +248,57 @@ export const updateEmpleado = asyncHandler(async (req, res) => {
 });
 
 /**
- * Eliminar un empleado (cambiar estado a inactivo)
+ * Eliminar un empleado permanentemente
+ * Elimina el empleado, su usuario asociado y todos sus registros
  */
 export const deleteEmpleado = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const empleado = await Empleado.findByPk(id);
+  const empleado = await Empleado.findByPk(id, {
+    include: [
+      {
+        model: Usuario,
+        as: 'usuario'
+      }
+    ]
+  });
 
   if (!empleado) {
     res.status(404);
     throw new Error(`Empleado con ID ${id} no encontrado`);
   }
 
-  // Soft delete: cambiar estado a inactivo
-  await empleado.update({ estado: 'inactivo' });
+  // Iniciar transacción para eliminar todo en conjunto
+  const transaction = await db.sequelize.transaction();
 
-  res.json({
-    success: true,
-    message: 'Empleado desactivado exitosamente',
-    data: empleado
-  });
+  try {
+    // 1. Eliminar todos los registros del empleado
+    await db.Registro.destroy({
+      where: { empleado_id: id },
+      transaction
+    });
+
+    // 2. Eliminar el usuario asociado si existe
+    if (empleado.usuario) {
+      await empleado.usuario.destroy({ transaction });
+    }
+
+    // 3. Eliminar el empleado
+    await empleado.destroy({ transaction });
+
+    // Confirmar transacción
+    await transaction.commit();
+
+    res.json({
+      success: true,
+      message: 'Empleado, usuario y registros eliminados permanentemente',
+      data: { id }
+    });
+  } catch (error) {
+    // Revertir transacción en caso de error
+    await transaction.rollback();
+    throw error;
+  }
 });
 
 /**

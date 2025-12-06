@@ -39,9 +39,6 @@ export const getAllUsuarios = asyncHandler(async (req, res) => {
           'tipo_empleo',
           'estado'
         ],
-        where: {
-          estado: 'activo' // Solo empleados activos
-        },
         include: [
           {
             model: db.Departamento,
