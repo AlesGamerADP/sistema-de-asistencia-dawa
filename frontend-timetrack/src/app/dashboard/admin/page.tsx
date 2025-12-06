@@ -400,9 +400,13 @@ export default function AdminDashboardPage() {
                     return;
                   }
                   
+                  // Eliminar del backend (soft delete: estado -> inactivo)
                   await deleteEmpleado(usuario.id);
-                  toast.success('Empleado eliminado exitosamente');
+                  
+                  // Recargar datos para reflejar el cambio
                   await loadDashboardData();
+                  
+                  toast.success('Empleado eliminado exitosamente');
                 } catch (error: any) {
                   console.error('Error al eliminar empleado:', error);
                   toast.error(error.response?.data?.message || 'Error al eliminar empleado');
