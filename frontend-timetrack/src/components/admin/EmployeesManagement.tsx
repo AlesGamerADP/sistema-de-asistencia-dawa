@@ -27,15 +27,15 @@ import { UserPlus, Edit2, Trash2, Search, Briefcase, Clock } from 'lucide-react'
 
 interface EmployeeManagementProps {
   users: User[];
+  departments: { id: number; nombre: string }[];
   onAddUser: (user: Omit<User, 'id'>) => void;
   onUpdateUser: (userId: string, user: Partial<User>) => void;
   onDeleteUser: (userId: string) => void;
 }
 
-const departments = ['Contabilidad', 'TI', 'Técnicos', 'Ingenieros'] as const;
 const employmentTypes = ['Full-time', 'Part-time'] as const;
 
-export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUser }: EmployeeManagementProps) {
+export function EmployeeManagement({ users, departments, onAddUser, onUpdateUser, onDeleteUser }: EmployeeManagementProps) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{ show: boolean; userId: string; userName: string } | null>(null);
@@ -51,7 +51,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
     password: '',
     name: '',
     role: 'employee' as 'employee' | 'supervisor',
-    department: '' as typeof departments[number] | '',
+    department: '',
     employmentType: '' as typeof employmentTypes[number] | '',
     scheduledStartTime: '09:00',
     scheduledEndTime: '17:00'
@@ -74,9 +74,8 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
     setEditingUser(user);
     
     // Validar que el departamento esté en la lista de departamentos válidos
-    const validDepartment: typeof departments[number] | '' = 
-      user.department && departments.includes(user.department as typeof departments[number])
-        ? (user.department as typeof departments[number])
+    const validDepartment = user.department && departments.some(d => d.nombre === user.department)
+        ? user.department
         : '';
     
     // Validar que el tipo de empleo esté en la lista de tipos válidos
@@ -90,7 +89,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
       password: '',
       name: user.name,
       role: user.role,
-      department: validDepartment,
+      department: validDepartment as string,
       employmentType: validEmploymentType,
       scheduledStartTime: user.scheduledStartTime || '09:00',
       scheduledEndTime: user.scheduledEndTime || '17:00'
@@ -225,13 +224,13 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="department">Área *</Label>
-          <Select value={formData.department} onValueChange={(value) => setFormData({ ...formData, department: value as typeof departments[number] })}>
+          <Select value={formData.department} onValueChange={(value) => setFormData({ ...formData, department: value })}>
             <SelectTrigger>
               <SelectValue placeholder="Seleccionar área" />
             </SelectTrigger>
             <SelectContent>
               {departments.map(dept => (
-                <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                <SelectItem key={dept.id} value={dept.nombre}>{dept.nombre}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -344,7 +343,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                 <SelectContent>
                   <SelectItem value="all">Todas las áreas</SelectItem>
                   {departments.map(dept => (
-                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    <SelectItem key={dept.id} value={dept.nombre}>{dept.nombre}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -503,30 +502,31 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
             </DialogContent>
           </Dialog>
 
-          {/* Alert Dialog para confirmación de eliminación */}
+          {/* Alert Dialog para confirmación de inactivación */}
           <AlertDialog open={deleteConfirmation?.show || false} onOpenChange={(open) => !open && setDeleteConfirmation(null)}>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>¿Estás seguro de eliminar este empleado?</AlertDialogTitle>
+                <AlertDialogTitle>¿Marcar empleado como inactivo?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Esta acción eliminará permanentemente a <strong>{deleteConfirmation?.userName}</strong> de la base de datos.
+                  Esta acción cambiará el estado de <strong>{deleteConfirmation?.userName}</strong> a <strong>inactivo</strong>.
                   <br /><br />
-                  Se eliminarán también:
+                  El empleado:
                   <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>Su usuario asociado</li>
-                    <li>Todos sus registros de asistencia</li>
+                    <li>No aparecerá en la lista de empleados activos</li>
+                    <li>No podrá acceder al sistema</li>
+                    <li>Se conservarán todos sus registros históricos</li>
                   </ul>
                   <br />
-                  <span className="text-red-600 font-semibold">Esta acción no se puede deshacer.</span>
+                  <span className="text-amber-600 font-semibold">Podrás reactivarlo posteriormente si es necesario.</span>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction 
                   onClick={confirmDelete}
-                  className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                  className="bg-amber-600 hover:bg-amber-700 focus:ring-amber-600"
                 >
-                  Eliminar permanentemente
+                  Marcar como inactivo
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

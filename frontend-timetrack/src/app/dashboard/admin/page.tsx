@@ -338,6 +338,7 @@ export default function AdminDashboardPage() {
                 scheduledEndTime: emp.scheduledEndTime,
                 estado: emp.estado || 'activo'
               }))}
+              departments={departamentos}
               onAddUser={async (user) => {
                 try {
                   // Buscar el ID del departamento por nombre
@@ -422,16 +423,20 @@ export default function AdminDashboardPage() {
                     return;
                   }
                   
-                  // Eliminar permanentemente del backend (empleado + usuario + registros)
-                  await deleteEmpleado(usuario.id);
+                  // Actualizar estado a inactivo
+                  const updateData = {
+                    estado: 'inactivo'
+                  };
+                  
+                  await updateEmpleado(usuario.id, updateData);
                   
                   // Recargar datos para reflejar el cambio
                   await loadDashboardData();
                   
-                  toast.success('Empleado eliminado exitosamente');
+                  toast.success('Empleado desactivado exitosamente');
                 } catch (error: any) {
-                  console.error('Error al eliminar empleado:', error);
-                  toast.error(error.response?.data?.message || 'Error al eliminar empleado');
+                  console.error('Error al desactivar empleado:', error);
+                  toast.error(error.response?.data?.message || 'Error al desactivar empleado');
                 }
               }}
             />

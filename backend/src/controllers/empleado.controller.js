@@ -248,8 +248,7 @@ export const updateEmpleado = asyncHandler(async (req, res) => {
 });
 
 /**
- * Eliminar un empleado permanentemente
- * Elimina el empleado, su usuario asociado y todos sus registros
+ * Cambiar estado de empleado a inactivo (soft delete)
  */
 export const deleteEmpleado = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -268,37 +267,14 @@ export const deleteEmpleado = asyncHandler(async (req, res) => {
     throw new Error(`Empleado con ID ${id} no encontrado`);
   }
 
-  // Iniciar transacción para eliminar todo en conjunto
-  const transaction = await db.sequelize.transaction();
+  // Soft delete: cambiar estado a inactivo
+  await empleado.update({ estado: 'inactivo' });
 
-  try {
-    // 1. Eliminar todos los registros del empleado
-    await db.Registro.destroy({
-      where: { empleado_id: id },
-      transaction
-    });
-
-    // 2. Eliminar el usuario asociado si existe
-    if (empleado.usuario) {
-      await empleado.usuario.destroy({ transaction });
-    }
-
-    // 3. Eliminar el empleado
-    await empleado.destroy({ transaction });
-
-    // Confirmar transacción
-    await transaction.commit();
-
-    res.json({
-      success: true,
-      message: 'Empleado, usuario y registros eliminados permanentemente',
-      data: { id }
-    });
-  } catch (error) {
-    // Revertir transacción en caso de error
-    await transaction.rollback();
-    throw error;
-  }
+  res.json({
+    success: true,
+    message: 'Empleado marcado como inactivo exitosamente',
+    data: empleado
+  });
 });
 
 /**
