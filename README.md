@@ -4,7 +4,7 @@ Sistema completo de gestión de asistencia de empleados con panel administrativo
 
 ## Descripción General
 
-TimeTrack es una aplicación empresarial diseñada para controlar y gestionar la asistencia de empleados en tiempo real. Proporciona interfaces diferenciadas según el rol del usuario (administrador, supervisor, colaborador) y permite el registro preciso de entradas, salidas y justificaciones.
+TimeTrack es una aplicación empresarial diseñada para controlar y gestionar la asistencia de empleados en tiempo real. Proporciona interfaces diferenciadas según el rol del usuario (administrador, colaborador) y permite el registro preciso de entradas, salidas y justificaciones.
 
 ### Características Principales
 
