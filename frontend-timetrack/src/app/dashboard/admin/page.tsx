@@ -37,6 +37,7 @@ interface Employee {
   employmentType?: string;
   scheduledStartTime?: string;
   scheduledEndTime?: string;
+  estado?: 'activo' | 'inactivo';
   empleado?: any;
 }
 
@@ -173,6 +174,7 @@ export default function AdminDashboardPage() {
           employmentType: u.empleado?.puesto,
           scheduledStartTime: u.empleado?.hora_entrada?.slice(0, 5),
           scheduledEndTime: u.empleado?.hora_salida?.slice(0, 5),
+          estado: u.empleado?.estado || 'activo',
           empleado: u.empleado,
         };
       });
@@ -330,7 +332,8 @@ export default function AdminDashboardPage() {
                 department: emp.department,
                 employmentType: emp.employmentType,
                 scheduledStartTime: emp.scheduledStartTime,
-                scheduledEndTime: emp.scheduledEndTime
+                scheduledEndTime: emp.scheduledEndTime,
+                estado: emp.estado || 'activo'
               }))}
               onAddUser={async (user) => {
                 try {

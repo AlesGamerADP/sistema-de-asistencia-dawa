@@ -20,6 +20,7 @@ interface User {
   employmentType?: string;
   scheduledStartTime?: string;
   scheduledEndTime?: string;
+  estado?: 'activo' | 'inactivo';
 }
 import { UserPlus, Edit2, Trash2, Search, Briefcase, Clock } from 'lucide-react';
 
@@ -39,6 +40,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [employmentFilter, setEmploymentFilter] = useState<string>('all');
+  const [estadoFilter, setEstadoFilter] = useState<string>('activo');
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 7;
 
@@ -146,10 +148,11 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                            user.username.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesDepartment = departmentFilter === 'all' || user.department === departmentFilter;
       const matchesEmployment = employmentFilter === 'all' || user.employmentType === employmentFilter;
+      const matchesEstado = estadoFilter === 'all' || user.estado === estadoFilter;
       
-      return matchesSearch && matchesDepartment && matchesEmployment;
+      return matchesSearch && matchesDepartment && matchesEmployment && matchesEstado;
     });
-  }, [employees, searchTerm, departmentFilter, employmentFilter]);
+  }, [employees, searchTerm, departmentFilter, employmentFilter, estadoFilter]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredEmployees.length / ITEMS_PER_PAGE);
@@ -161,7 +164,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
   // Reset to page 1 when filters change
   useMemo(() => {
     setCurrentPage(1);
-  }, [searchTerm, departmentFilter, employmentFilter]);
+  }, [searchTerm, departmentFilter, employmentFilter, estadoFilter]);
 
   const getDepartmentColor = (department?: string) => {
     switch (department) {
@@ -311,7 +314,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
             </DialogContent>
           </Dialog>
           {/* Filtros */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="space-y-2">
               <Label>Buscar</Label>
               <div className="relative">
@@ -354,6 +357,20 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label>Filtrar por Estado</Label>
+              <Select value={estadoFilter} onValueChange={setEstadoFilter}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="activo">Activos</SelectItem>
+                  <SelectItem value="inactivo">Inactivos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Tabla de empleados */}
@@ -366,13 +383,14 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                   <TableHead>Área</TableHead>
                   <TableHead>Tipo</TableHead>
                   <TableHead>Horario</TableHead>
+                  <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedEmployees.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                       No se encontraron empleados
                     </TableCell>
                   </TableRow>
@@ -381,7 +399,7 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm">
+                          <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm">
                             {user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                           </div>
                           {user.name}
@@ -402,6 +420,16 @@ export function EmployeeManagement({ users, onAddUser, onUpdateUser, onDeleteUse
                       </TableCell>
                       <TableCell className="text-sm text-gray-600">
                         {user.scheduledStartTime} - {user.scheduledEndTime}
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={user.estado === 'activo' ? 'default' : 'secondary'}
+                          className={user.estado === 'activo' 
+                            ? 'bg-green-100 text-green-700 border-green-200' 
+                            : 'bg-gray-100 text-gray-700 border-gray-200'}
+                        >
+                          {user.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
