@@ -123,7 +123,7 @@ export function EmployeeManagement({ users, departments, onAddUser, onUpdateUser
     if (editingUser) {
       onUpdateUser(editingUser.id, {
         name: formData.name,
-        department: formData.department as typeof departments[number],
+        department: formData.department,
         employmentType: formData.employmentType as typeof employmentTypes[number],
         scheduledStartTime: formData.scheduledStartTime,
         scheduledEndTime: formData.scheduledEndTime
@@ -135,7 +135,7 @@ export function EmployeeManagement({ users, departments, onAddUser, onUpdateUser
         password: formData.password,
         name: formData.name,
         role: formData.role,
-        department: formData.department as typeof departments[number],
+        department: formData.department,
         employmentType: formData.employmentType as typeof employmentTypes[number],
         scheduledStartTime: formData.scheduledStartTime,
         scheduledEndTime: formData.scheduledEndTime
