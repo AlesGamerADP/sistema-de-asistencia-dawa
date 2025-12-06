@@ -182,9 +182,6 @@ export default function AdminDashboardPage() {
         normalizeRegistro
       );
 
-      // Activos = entrada sin salida (si tu modelo los maneja así)
-      const active = registros.filter((r: NormalizedRegistro) => r.entrada && !r.salida);
-
       // -------- REGISTROS ELIMINADOS
       const eliminados = eliminadosRes.data?.data || eliminadosRes.data || [];
 
@@ -237,16 +234,16 @@ export default function AdminDashboardPage() {
       // -------- STATS
       const statsComputed: Stats = {
         employees: employeesList.length,
-        activeLogs: active.length,
+        activeLogs: registros.length, // Total de registros activos (no eliminados)
         deletedLogs: eliminados.length,
       };
 
       // -------- TABLAS
-      const activeLogsRows = active.map((r: NormalizedRegistro) => ({
+      const activeLogsRows = registros.map((r: NormalizedRegistro) => ({
         id: r.raw?.id || `${r.empleadoId}-${r.entrada?.toISOString?.()}`,
         name: r.nombre,
         date: r.entrada?.toLocaleString?.() || "",
-        status: "in",
+        status: r.salida ? "completed" : "in",
       }));
 
       setEmployees(employeesList);
