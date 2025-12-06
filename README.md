@@ -1,216 +1,268 @@
-# TimeTrack — Sistema de Control de Asistencias
+﻿# Sistema de Control de Asistencias TimeTrack
 
-TimeTrack es una aplicación web para registrar y gestionar la asistencia de empleados. Incluye un panel de colaborador para fichar entrada/salida con justificaciones y un panel administrativo para gestión de empleados, departamentos y registros.
+Sistema completo de gestión de asistencia de empleados con panel administrativo y colaborador. Construido con arquitectura moderna cliente-servidor, utilizando Next.js para el frontend y Express.js con PostgreSQL para el backend.
 
-## ✨ Características principales
+## Descripción General
 
-- Fichaje de entrada/salida por colaborador (automático según estado)
-- Justificaciones de llegada tarde, salida anticipada e incidencia de salida sin entrada
-- Historial personal de asistencias (últimos días)
-- Gestión de empleados, usuarios, departamentos y registros (admin/supervisor)
-- Roles y autenticación con JWT (admin, supervisor, empleado)
-- API REST con Express + Sequelize + PostgreSQL
-- Frontend React con UI moderna (Tailwind) y estado global con Zustand
+TimeTrack es una aplicación empresarial diseñada para controlar y gestionar la asistencia de empleados en tiempo real. Proporciona interfaces diferenciadas según el rol del usuario (administrador, supervisor, colaborador) y permite el registro preciso de entradas, salidas y justificaciones.
 
-## 🧱 Arquitectura
+### Características Principales
 
-Monorepo con dos carpetas principales:
+- **Gestión de Asistencias**: Registro automático de entrada/salida con validación de horarios
+- **Sistema de Justificaciones**: Manejo de llegadas tardías, salidas anticipadas y ausencias
+- **Panel Administrativo**: Control total de empleados, departamentos y registros
+- **Panel de Colaborador**: Vista personal de asistencias e historial
+- **Reportes y Estadísticas**: Análisis de horas trabajadas, cumplimiento de horarios
+- **Sistema de Roles**: Autenticación JWT con permisos diferenciados
+- **Paginación Avanzada**: Máximo 7 registros por página en todas las vistas
+- **Búsqueda y Filtrado**: Herramientas para localizar información rápidamente
 
-```
-CONTROL-DE-ASISTENCIAS---TIMETRACK/
-├─ backend/     # API REST (Express + Sequelize + PostgreSQL)
-└─ frontend/    # Aplicación React (CRA) + Tailwind + React Router
-```
+## Arquitectura del Sistema
 
-Comunicación: el frontend consume el backend vía HTTP (CORS habilitado). La autenticación usa JWT en el header Authorization: Bearer <token>.
+### Stack Tecnológico
 
-## 🛠 Tecnologías
+**Backend**
+- Node.js 18+ con Express.js 5
+- PostgreSQL 12+ como base de datos relacional
+- Sequelize ORM para modelado de datos
+- JWT para autenticación stateless
+- Bcrypt para hashing de contraseñas
+- Helmet y Rate Limiting para seguridad
 
-- Backend: Node 18+, Express 5, Sequelize 6, PostgreSQL 12+, JWT, CORS, Morgan
-- Frontend: React 19, react-router-dom, TailwindCSS, Axios, Zustand, Lucide Icons
+**Frontend**
+- Next.js 16.0.7 con Turbopack
+- React 19.2.0 con hooks modernos
+- Tailwind CSS v4 para estilos
+- Framer Motion para animaciones
+- Zustand para manejo de estado global
+- Axios para comunicación HTTP
+- React Router DOM 6.30.2 para navegación
 
-## 📂 Estructura de carpetas (resumen)
-
-```
-backend/
-	src/
-		app.js                 # Middlewares, CORS y montaje de rutas
-		server.js              # Boot del servidor y health checks
-		config/db.config.js    # Configuración de PostgreSQL (dotenv)
-		database/              # Init Sequelize (test/sync)
-		middlewares/           # auth, error handler
-		models/                # Sequelize models y relaciones
-		controllers/           # Lógica de negocio
-		routes/                # Rutas API (empleados, usuarios, registros, departamentos)
-	scripts/generate-password-hash.js  # Utilidad para generar hashes bcrypt
-
-frontend/
-	src/
-		api/                   # Clientes Axios (auth, employee, admin)
-		pages/                 # Páginas (Dashboard Admin/Colaborador, Login)
-		components/            # Componentes UI y diálogos
-		store/useAuthStore.js  # Estado global de autenticación (Zustand)
-		app/                   # Estilos y layout global
-```
-
-## ⚙️ Requisitos previos
-
-- Node.js 18 o superior
-- PostgreSQL 12 o superior en ejecución local
-- Windows PowerShell (este README incluye comandos para PowerShell)
-
-## 🔐 Variables de entorno
-
-Backend (`backend/.env`):
+### Estructura del Proyecto
 
 ```
-PORT=4000
-NODE_ENV=development
-FRONTEND_URL=http://localhost:3000
+sistema-de-asistencia-dawa/
+├── backend/                    # API REST y lógica de negocio
+│   ├── src/
+│   │   ├── config/            # Configuraciones de base de datos
+│   │   ├── controllers/       # Controladores de negocio
+│   │   ├── database/          # Conexión Sequelize
+│   │   ├── middlewares/       # Auth, seguridad, errores
+│   │   ├── models/            # Modelos de datos
+│   │   ├── routes/            # Definición de endpoints
+│   │   ├── utils/             # Utilidades y helpers
+│   │   ├── app.js            # Configuración Express
+│   │   └── server.js         # Punto de entrada
+│   ├── scripts/               # Scripts de utilidad
+│   └── package.json
+│
+├── frontend-timetrack/         # Aplicación web cliente
+│   ├── src/
+│   │   ├── api/              # Clientes HTTP y endpoints
+│   │   ├── components/       # Componentes React reutilizables
+│   │   │   ├── admin/       # Componentes del panel admin
+│   │   │   ├── employee/    # Componentes de colaboradores
+│   │   │   ├── layout/      # Layouts y navegación
+│   │   │   └── ui/          # Componentes UI base
+│   │   ├── pages/           # Páginas de la aplicación
+│   │   ├── store/           # Estado global Zustand
+│   │   ├── styles/          # Estilos globales
+│   │   └── App.tsx          # Componente raíz
+│   ├── public/              # Archivos estáticos
+│   ├── next.config.ts       # Configuración Next.js
+│   ├── tailwind.config.ts   # Configuración Tailwind
+│   └── package.json
+│
+└── docs/                      # Documentación del proyecto
+```
 
-# PostgreSQL
+## Instalación y Configuración
+
+### Prerrequisitos
+
+- Node.js >= 18.0.0
+- PostgreSQL >= 12.0
+- npm o yarn
+- Git
+
+### Configuración del Backend
+
+1. Navegar al directorio del backend:
+```bash
+cd backend
+```
+
+2. Instalar dependencias:
+```bash
+npm install
+```
+
+3. Configurar variables de entorno:
+```bash
+cp .env.example .env
+```
+
+Editar `.env` con tus credenciales:
+```env
+# Base de datos
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=timetrack
 DB_USER=postgres
-DB_PASSWORD=TU_CONTRASEÑA
-DB_DIALECT=postgres
+DB_PASSWORD=tu_password
+DB_NAME=timetrack_db
+
+# Servidor
+PORT=4000
+NODE_ENV=development
 
 # JWT
-JWT_SECRET=cambia_este_secreto_en_produccion
+JWT_SECRET=tu_secreto_muy_seguro_aqui
+
+# Frontend (para CORS)
+FRONTEND_URL=http://localhost:3000
 ```
 
-Frontend (`frontend/.env` opcional):
-
-```
-REACT_APP_API_URL=http://localhost:4000/api
-```
-
-Si no defines `REACT_APP_API_URL`, el frontend usará `http://localhost:4000/api` por defecto.
-
-## 🚀 Puesta en marcha (desarrollo)
-
-1) Instalar dependencias
-
-```powershell
-cd backend; npm install; cd ..
-cd frontend; npm install; cd ..
+4. Crear base de datos y tablas:
+```bash
+npm run db:create
 ```
 
-2) Configurar base de datos PostgreSQL
-
-- Crea la base de datos `timetrack` y configura las credenciales en `backend/.env`.
-- Asegúrate de que el servicio de PostgreSQL está iniciado.
-
-3) Iniciar el backend (puerto 4000)
-
-```powershell
-cd backend; npm run dev
+5. Poblar con datos iniciales:
+```bash
+npm run db:seed
 ```
 
-4) Iniciar el frontend (puerto 3000)
-
-Abre otra terminal y ejecuta:
-
-```powershell
-cd frontend; npm start
+6. Iniciar servidor de desarrollo:
+```bash
+npm run dev
 ```
 
-5) Verificar
+El backend estará disponible en `http://localhost:4000`
 
-- Backend health: http://localhost:4000
-- API info: http://localhost:4000/api
-- Frontend: http://localhost:3000
+### Configuración del Frontend
 
-## 👤 Usuarios y autenticación
-
-El login genera un token JWT que el frontend almacena y envía en `Authorization: Bearer <token>`.
-
-Importante sobre contraseñas:
-
-- El login valida contraseñas con bcrypt. Por ello, la columna `contraseña` en la tabla `usuarios` debe almacenar el HASH bcrypt, no texto plano.
-- El endpoint `POST /api/usuarios` aún no aplica hashing (marcado como TODO). Recomendación: genera el hash y crea el usuario con ese hash directamente en la base de datos, o ajusta el controlador para hashear antes de guardar.
-
-Generar hashes de ejemplo (admin/colaborador):
-
-```powershell
-cd backend; node scripts/generate-password-hash.js
+1. Navegar al directorio del frontend:
+```bash
+cd frontend-timetrack
 ```
 
-Luego, inserta el hash en la tabla `usuarios` (columna `contraseña`).
-
-Roles soportados en backend: `admin`, `supervisor`, `empleado`.
-
-## 📲 Flujos de uso (Colaborador)
-
-- Marcar Entrada: si hoy no hay registro, se crea con `hora_entrada`.
-- Marcar Salida: si hoy hay entrada y aún no hay salida, se actualiza `hora_salida`.
-- Llegada tarde (>15 min del horario configurado en el empleado): el frontend solicita justificación y usa `POST /api/registros/entrada-justificada`.
-- Salida anticipada (>15 min antes del horario): el frontend solicita justificación y usa `POST /api/registros/salida-justificada`.
-- Salida sin entrada: registra incidente con `POST /api/registros/salida-incidente`.
-
-Estado actual del día (`GET /api/registros/mi-estado`): `fuera`, `dentro` o `completo`.
-
-Historial personal (`GET /api/registros/mi-historial?limit=30`).
-
-Nota: Las reglas de “15 minutos” se aplican en la UI; el backend registra y deja rastros en `observaciones`.
-
-## 🔗 Endpoints principales
-
-- Autenticación: `POST /api/usuarios/login`, `POST /api/usuarios/logout`, `GET /api/usuarios/verify`
-- Registros (empleado autenticado): `POST /api/registros/marcar`, `GET /api/registros/mi-estado`, `GET /api/registros/mi-historial`, `POST /api/registros/entrada-justificada`, `POST /api/registros/salida-justificada`, `POST /api/registros/salida-incidente`
-- Registros (admin/supervisor): CRUD, filtros por rango, papelera y restauración
-- Empleados/Usuarios/Departamentos: CRUD
-
-Consulta la documentación detallada en `docs/API-ENDPOINTS.md`.
-
-## 🧰 Scripts útiles
-
-- Backend
-	- `npm run dev`: servidor con nodemon
-	- `npm start`: servidor en producción
-- Frontend
-	- `npm start`: servidor de desarrollo (CRA)
-	- `npm run build`: build de producción
-
-## 🔒 Seguridad y buenas prácticas
-
-- Mantén `JWT_SECRET` fuera del repositorio (usa `.env`)
-- Usa HTTPS en producción y configura CORS por dominio
-- Valida siempre la entrada de datos; maneja errores con el middleware incluido
-
-## 🧪 Comprobaciones rápidas
-
-Backend health (PowerShell):
-
-```powershell
-curl http://localhost:4000
+2. Instalar dependencias:
+```bash
+npm install
 ```
 
-Respuesta esperada:
-
-```json
-{
-	"success": true,
-	"message": "✅ TimeTrack Backend API",
-	"version": "1.0.0",
-	"status": "running"
-}
+3. Configurar variables de entorno:
+```bash
+cp .env.example .env.local
 ```
 
-## 🐞 Troubleshooting
+Editar `.env.local`:
+```env
+# URL del backend
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
 
-- Puerto ocupado: cambia `PORT` en `backend/.env`.
-- No conecta a PostgreSQL: revisa servicio activo, credenciales y DB `timetrack` creada.
-- Login falla siempre: verifica que la contraseña en DB sea un hash bcrypt válido para el password ingresado.
-- CORS bloqueado: ajusta `FRONTEND_URL` en `backend/.env`.
+4. Iniciar servidor de desarrollo:
+```bash
+npm run dev
+```
 
-## 📚 Recursos
+El frontend estará disponible en `http://localhost:3000`
 
-- Guía de uso (usuarios finales): `docs/GUIA-DE-USO.md`
-- Endpoints de la API: `docs/API-ENDPOINTS.md`
-- Backend: `backend/README.md` (detalles técnicos y modelos)
+## Uso del Sistema
 
----
+### Acceso Inicial
 
-TimeTrack © 2025 — MIT License
+**Administrador**
+- Usuario: `admin`
+- Contraseña: `admin123`
+- Rol: Administrador
+
+**Colaborador**
+- Usuario: `colaborador`
+- Contraseña: `colab123`
+- Rol: Empleado
+
+### Flujo de Trabajo
+
+1. **Login**: Seleccionar rol e ingresar credenciales
+2. **Dashboard**: Vista según rol asignado
+3. **Registro de Asistencia**: Marcar entrada/salida (colaboradores)
+4. **Gestión**: Administrar empleados, departamentos, registros (admin)
+5. **Reportes**: Consultar estadísticas y resúmenes
+
+## API Endpoints
+
+### Autenticación
+- `POST /api/usuarios/login` - Iniciar sesión
+- `POST /api/usuarios/logout` - Cerrar sesión
+- `GET /api/usuarios/me` - Obtener usuario actual
+
+### Empleados
+- `GET /api/empleados` - Listar empleados
+- `POST /api/empleados` - Crear empleado
+- `PUT /api/empleados/:id` - Actualizar empleado
+- `DELETE /api/empleados/:id` - Eliminar empleado (soft delete)
+
+### Registros
+- `GET /api/registros` - Listar registros activos
+- `POST /api/registros` - Crear registro de asistencia
+- `PUT /api/registros/:id` - Actualizar registro
+- `DELETE /api/registros/:id` - Eliminar registro
+- `GET /api/registros/eliminados` - Listar registros eliminados
+- `POST /api/registros/:id/restaurar` - Restaurar registro
+
+### Departamentos
+- `GET /api/departamentos` - Listar departamentos
+- `POST /api/departamentos` - Crear departamento
+- `PUT /api/departamentos/:id` - Actualizar departamento
+- `DELETE /api/departamentos/:id` - Eliminar departamento
+
+## Despliegue
+
+### Backend (Render)
+
+1. Conectar repositorio a Render
+2. Configurar variables de entorno
+3. Comando de build: `npm install`
+4. Comando de inicio: `npm start`
+5. Agregar PostgreSQL database
+
+### Frontend (Vercel)
+
+1. Conectar repositorio a Vercel
+2. Directorio raíz: `frontend-timetrack`
+3. Framework: Next.js
+4. Comando de build: `npm run build`
+5. Variables de entorno: `NEXT_PUBLIC_API_URL`
+
+## Seguridad
+
+- Autenticación JWT con tokens de expiración
+- Hashing de contraseñas con Bcrypt (salt rounds: 10)
+- Rate limiting para prevenir ataques de fuerza bruta
+- CORS configurado con whitelist de dominios
+- Helmet para headers de seguridad HTTP
+- Validación de inputs con express-validator
+- SQL injection protection mediante Sequelize ORM
+- XSS protection en frontend
+
+## Contribución
+
+1. Fork del repositorio
+2. Crear rama feature: `git checkout -b feature/nueva-funcionalidad`
+3. Commit cambios: `git commit -am 'Agregar nueva funcionalidad'`
+4. Push a la rama: `git push origin feature/nueva-funcionalidad`
+5. Crear Pull Request
+
+## Licencia
+
+MIT License - ver archivo LICENSE para más detalles
+
+
+## Documentación Adicional
+
+- [Backend README](./backend/README.md) - Documentación detallada del API
+- [Frontend README](./frontend-timetrack/README.md) - Documentación de la aplicación web
+- [API Endpoints](./docs/API-ENDPOINTS.md) - Especificación completa de endpoints
+- [Guía de Uso](./docs/GUIA-DE-USO.md) - Manual de usuario

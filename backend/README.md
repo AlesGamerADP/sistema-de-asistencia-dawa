@@ -1,366 +1,492 @@
-# 🚀 TimeTrack Backend - Sistema de Control de Asistencia
+# TimeTrack Backend - API REST para Control de Asistencias
 
-Sistema backend profesional para gestión de asistencia de empleados, construido con **Express.js**, **Sequelize ORM** y **PostgreSQL**.
+Sistema backend robusto y escalable para la gestión de asistencia de empleados, construido con Express.js, Sequelize ORM y PostgreSQL. Implementa arquitectura MVC con medidas de seguridad de nivel empresarial.
 
-## 📋 Características
+## Características del Sistema
 
-- ✅ Arquitectura modular y escalable (MVC)
-- ✅ ORM Sequelize con PostgreSQL
-- ✅ Modelos con validaciones y relaciones complejas
-- ✅ Variables de entorno para configuración segura
-- ✅ Soporte para ES Modules (import/export)
-- ✅ Pool de conexiones optimizado
-- ✅ Manejo de errores centralizado
-- ✅ CORS configurado para frontend
-- ✅ Sistema de auditoría integrado
-- ✅ Gestión de turnos y justificaciones
+- Arquitectura modular y escalable siguiendo patrón MVC
+- ORM Sequelize con soporte completo para relaciones complejas
+- Sistema de autenticación JWT con refresh tokens
+- Rate limiting y protección contra ataques comunes
+- Validación exhaustiva de datos de entrada
+- Soft deletes para mantener integridad histórica
+- Sistema de auditoría integrado
+- Pool de conexiones optimizado para alta concurrencia
+- Manejo centralizado de errores
+- CORS configurado para entornos multi-dominio
+- Logging con Winston para producción
+- Soporte para múltiples zonas horarias
 
-## 🗂️ Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 backend/
 ├── src/
-│   ├── config/              # Configuraciones
-│   │   └── db.config.js     # Configuración de PostgreSQL
-│   ├── database/            # Conexión a BD
-│   │   └── index.js         # Instancia de Sequelize
-│   ├── models/              # Modelos Sequelize
-│   │   ├── index.js         # Relaciones entre modelos
-│   │   ├── departamento.model.js
-│   │   ├── empleado.model.js
-│   │   ├── registro.model.js
-│   │   ├── usuario.model.js
-│   │   ├── auditoria.model.js
-│   │   ├── justificacion.model.js
-│   │   ├── turno.model.js
-│   │   └── empleado_turno.model.js
-│   ├── controllers/         # Controladores (lógica de negocio)
-│   ├── routes/              # Rutas de la API
-│   ├── utils/               # Utilidades y helpers
-│   └── server.js            # Punto de entrada del servidor
-├── .env                     # Variables de entorno
+│   ├── config/                    # Configuraciones del sistema
+│   │   ├── db.config.js          # Configuración PostgreSQL
+│   │   └── database.config.js    # Configuración Sequelize
+│   │
+│   ├── database/                  # Conexión y gestión de BD
+│   │   └── index.js              # Instancia Sequelize singleton
+│   │
+│   ├── models/                    # Modelos de datos (Sequelize)
+│   │   ├── index.js              # Relaciones y asociaciones
+│   │   ├── departamento.model.js # Departamentos de la empresa
+│   │   ├── empleado.model.js     # Datos de empleados
+│   │   ├── usuario.model.js      # Usuarios del sistema
+│   │   ├── registro.model.js     # Registros de asistencia
+│   │   ├── justificacion.model.js # Justificaciones
+│   │   ├── auditoria.model.js    # Log de auditoría
+│   │   ├── turno.model.js        # Turnos de trabajo
+│   │   └── empleado_turno.model.js # Asignación de turnos
+│   │
+│   ├── controllers/               # Lógica de negocio
+│   │   ├── empleado.controller.js
+│   │   ├── usuario.controller.js
+│   │   ├── registro.controller.js
+│   │   └── departamento.controller.js
+│   │
+│   ├── routes/                    # Definición de rutas API
+│   │   ├── index.js              # Router principal
+│   │   ├── empleado.routes.js
+│   │   ├── usuario.routes.js
+│   │   ├── registro.routes.js
+│   │   ├── departamento.routes.js
+│   │   └── health.routes.js
+│   │
+│   ├── middlewares/               # Middlewares personalizados
+│   │   ├── auth.middleware.js    # Verificación JWT
+│   │   ├── security.middleware.js # Helmet, rate limiting, CORS
+│   │   └── errorHandler.js       # Manejo global de errores
+│   │
+│   ├── utils/                     # Utilidades y helpers
+│   │   └── logger.config.js      # Configuración Winston
+│   │
+│   ├── app.js                     # Configuración Express
+│   └── server.js                  # Punto de entrada
+│
+├── scripts/                       # Scripts de utilidad
+│   ├── create-tables.js          # Creación de tablas
+│   ├── seed-users.js             # Datos iniciales
+│   ├── generate-password-hash.js # Generador de hashes
+│   └── fix-unique-index.js       # Reparación de índices
+│
+├── docs/                          # Documentación adicional
+│   ├── API-ENDPOINTS.md
+│   └── SECURITY-CHECKLIST.md
+│
+├── .env.example                   # Plantilla de variables de entorno
 ├── package.json
 └── README.md
 ```
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Implementadas
 
 | Tecnología | Versión | Propósito |
 |------------|---------|-----------|
-| Node.js | >=18.0.0 | Runtime de JavaScript |
-| Express.js | ^5.1.0 | Framework web |
-| Sequelize | ^6.37.5 | ORM para PostgreSQL |
-| PostgreSQL | >=12 | Base de datos relacional |
-| pg | ^8.16.3 | Driver de PostgreSQL |
-| dotenv | ^17.2.3 | Variables de entorno |
-| cors | ^2.8.5 | Middleware CORS |
-| nodemon | ^3.1.10 | Hot reload en desarrollo |
+| Node.js | >= 18.0.0 | Runtime de JavaScript |
+| Express.js | ^5.x | Framework web minimalista |
+| Sequelize | ^6.x | ORM para PostgreSQL |
+| PostgreSQL | >= 12.0 | Base de datos relacional |
+| JWT | ^9.x | Autenticación stateless |
+| Bcrypt | ^6.x | Hashing de contraseñas |
+| Helmet | ^8.x | Seguridad de headers HTTP |
+| Express Rate Limit | ^7.x | Protección contra abuso |
+| CORS | ^2.x | Control de acceso cross-origin |
+| Morgan | ^1.x | Logger de peticiones HTTP |
+| Winston | ^3.x | Sistema de logging robusto |
+| Dotenv | ^17.x | Gestión de variables de entorno |
+| Compression | ^1.x | Compresión gzip de respuestas |
 
-## 📊 Modelos de Base de Datos
+## Instalación y Configuración
 
-### 1. **Departamentos**
-Departamentos o áreas de la organización.
+### Requisitos Previos
 
-### 2. **Empleados**
-Información de los empleados con estado (activo/inactivo).
+- Node.js versión 18 o superior
+- PostgreSQL versión 12 o superior
+- npm o yarn como gestor de paquetes
 
-### 3. **Registros**
-Registros diarios de asistencia (entrada/salida).
-- **Restricción única:** Un empleado = un registro por día.
+### Pasos de Instalación
 
-### 4. **Usuarios**
-Usuarios del sistema con roles (admin/supervisor/empleado).
-- **Relación 1:1** con Empleados.
-
-### 5. **Auditoría**
-Trazabilidad de todas las operaciones del sistema.
-
-### 6. **Justificaciones**
-Justificaciones de faltas, retardos o salidas tempranas.
-
-### 7. **Turnos**
-Horarios laborales (matutino, vespertino, nocturno, etc.).
-
-### 8. **EmpleadoTurno**
-Asignación de turnos a empleados con fechas de validez.
-
-## 🔗 Relaciones entre Modelos
-
-```
-Departamento 1:N Empleado
-Empleado 1:N Registro
-Empleado 1:1 Usuario
-Empleado 1:N Justificación
-Empleado 1:N EmpleadoTurno
-Usuario 1:N Auditoría
-Usuario 1:N Justificación (aprobador)
-Turno 1:N EmpleadoTurno
-```
-
-## ⚙️ Instalación y Configuración
-
-### 1. **Instalar Dependencias**
-
+1. **Clonar el repositorio y navegar al backend:**
 ```bash
 cd backend
+```
+
+2. **Instalar dependencias:**
+```bash
 npm install
 ```
 
-Esto instalará:
-- express
-- sequelize
-- pg y pg-hstore
-- dotenv
-- cors
-- nodemon (dev)
+3. **Configurar variables de entorno:**
 
-### 2. **Configurar PostgreSQL**
-
-Asegúrate de tener PostgreSQL instalado y corriendo.
-
-**Crear la base de datos:**
-
-```sql
--- Conectar a PostgreSQL
-psql -U postgres
-
--- Crear la base de datos
-CREATE DATABASE timetrack;
-
--- Salir
-\q
+Crear archivo `.env` basado en `.env.example`:
+```bash
+cp .env.example .env
 ```
 
-### 3. **Configurar Variables de Entorno**
-
-Edita el archivo `.env` con tus credenciales:
-
+Configurar las siguientes variables:
 ```env
-# Puerto del servidor
+# Configuración del Servidor
 PORT=4000
-
-# Entorno (development/production)
 NODE_ENV=development
 
-# Configuración de PostgreSQL
+# Base de Datos PostgreSQL
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=timetrack
 DB_USER=postgres
-DB_PASSWORD=tu_contraseña_aqui
+DB_PASSWORD=tu_password_seguro
+DB_NAME=timetrack_db
 DB_DIALECT=postgres
 
-# URL del frontend (CORS)
+# Configuración del Pool de Conexiones
+DB_POOL_MAX=5
+DB_POOL_MIN=0
+DB_POOL_ACQUIRE=30000
+DB_POOL_IDLE=10000
+
+# Autenticación JWT
+JWT_SECRET=tu_secreto_muy_seguro_y_largo_aqui_min_32_caracteres
+JWT_EXPIRES_IN=24h
+
+# CORS - Frontend permitido
 FRONTEND_URL=http://localhost:3000
+
+# Logging
+LOG_LEVEL=info
 ```
 
-**⚠️ IMPORTANTE:** Cambia `DB_PASSWORD` con tu contraseña real de PostgreSQL.
+4. **Crear base de datos:**
 
-### 4. **Iniciar el Servidor**
+Opción A - Usando el script incluido:
+```bash
+npm run db:create
+```
 
-**Modo desarrollo (con hot reload):**
+Opción B - Manualmente:
+```sql
+CREATE DATABASE timetrack_db;
+```
 
+5. **Ejecutar migraciones y seeds:**
+```bash
+npm run db:seed
+```
+
+### Iniciar el Servidor
+
+**Modo desarrollo (con auto-reload):**
 ```bash
 npm run dev
 ```
 
 **Modo producción:**
-
 ```bash
 npm start
 ```
 
-### 5. **Verificar que funciona**
+El servidor estará disponible en `http://localhost:4000`
 
-Si todo está correcto, verás en la consola:
-
-```
-🚀 Iniciando TimeTrack Backend...
-
-📊 Verificando conexión con PostgreSQL...
-✅ Conexión a PostgreSQL establecida correctamente.
-
-🔄 Sincronizando modelos con la base de datos...
-✅ Modelos sincronizados con la base de datos.
-
-✅ Servidor iniciado correctamente
-
-   🌐 URL: http://localhost:4000
-   📂 Entorno: development
-   🗄️  Base de datos: PostgreSQL (timetrack)
-   📊 Modelos cargados: 8
-
-💡 Presiona Ctrl+C para detener el servidor
-```
-
-## 🧪 Probar la Conexión
-
-### 1. **Health Check Principal**
+### Verificar Health Check
 
 ```bash
-curl http://localhost:4000
+curl http://localhost:4000/health
+
+# O usando npm
+npm run health
 ```
 
 Respuesta esperada:
-
 ```json
 {
-  "success": true,
-  "message": "✅ TimeTrack Backend funcionando correctamente",
-  "timestamp": "2025-10-06T...",
-  "environment": "development",
-  "database": "PostgreSQL - timetrack"
+  "status": "OK",
+  "timestamp": "2024-12-05T10:30:00.000Z",
+  "uptime": 150.25,
+  "database": "connected"
 }
 ```
 
-### 2. **Verificar Estado de la BD**
+## Modelos de Datos
 
-```bash
-curl http://localhost:4000/api/health
-```
-
-Respuesta esperada:
-
-```json
-{
-  "success": true,
-  "database": "Conectada",
-  "models": [
-    "Departamento",
-    "Empleado",
-    "Registro",
-    "Usuario",
-    "Auditoria",
-    "Justificacion",
-    "Turno",
-    "EmpleadoTurno"
-  ],
-  "timestamp": "2025-10-06T..."
-}
-```
-
-## 📝 Scripts Disponibles
-
-| Comando | Descripción |
-|---------|-------------|
-| `npm start` | Inicia el servidor en modo producción |
-| `npm run dev` | Inicia el servidor en modo desarrollo (nodemon) |
-| `npm test` | Ejecuta los tests (pendiente de implementar) |
-
-## � Documentación relacionada
-
-- Guía general del proyecto (instalación, flujos y troubleshooting): ver README en la raíz del repo.
-- Endpoints detallados de la API: `../docs/API-ENDPOINTS.md`.
-
-## �🔧 Próximos Pasos
-
-### 1. **Crear Controladores**
-
-Ejemplo: `src/controllers/empleado.controller.js`
-
+### Departamento
+Representa las áreas de la empresa.
 ```javascript
-import db from '../models/index.js';
-const { Empleado, Departamento } = db;
+{
+  id: INTEGER (PK),
+  nombre: STRING(100),
+  descripcion: TEXT,
+  activo: BOOLEAN,
+  createdAt: DATE,
+  updatedAt: DATE
+}
+```
 
-export const getAllEmpleados = async (req, res) => {
-  try {
-    const empleados = await Empleado.findAll({
-      include: [{ model: Departamento, as: 'departamento' }]
-    });
-    res.json({ success: true, data: empleados });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+### Empleado
+Información del personal.
+```javascript
+{
+  id: INTEGER (PK),
+  nombre: STRING(100),
+  apellido: STRING(100),
+  dni: STRING(20) UNIQUE,
+  email: STRING(100) UNIQUE,
+  telefono: STRING(20),
+  direccion: TEXT,
+  fecha_nacimiento: DATE,
+  fecha_contratacion: DATE,
+  puesto: STRING(100),
+  salario: DECIMAL(10,2),
+  hora_entrada: TIME,
+  hora_salida: TIME,
+  departamento_id: INTEGER (FK),
+  activo: BOOLEAN,
+  createdAt: DATE,
+  updatedAt: DATE,
+  deletedAt: DATE
+}
+```
+
+### Usuario
+Credenciales de acceso al sistema.
+```javascript
+{
+  id: INTEGER (PK),
+  username: STRING(50) UNIQUE,
+  contraseña: STRING(255), // Hashed con bcrypt
+  email: STRING(100) UNIQUE,
+  rol: ENUM('admin', 'supervisor', 'empleado'),
+  empleado_id: INTEGER (FK),
+  ultimo_acceso: DATE,
+  activo: BOOLEAN,
+  createdAt: DATE,
+  updatedAt: DATE
+}
+```
+
+### Registro
+Entradas y salidas de empleados.
+```javascript
+{
+  id: INTEGER (PK),
+  empleado_id: INTEGER (FK),
+  fecha: DATE,
+  hora_entrada: TIME,
+  hora_salida: TIME,
+  tipo_registro: ENUM('entrada', 'salida'),
+  observaciones: TEXT,
+  justificacion_id: INTEGER (FK),
+  activo: BOOLEAN,
+  createdAt: DATE,
+  updatedAt: DATE,
+  deletedAt: DATE
+}
+```
+
+## API Endpoints
+
+### Autenticación
+
+**POST /api/usuarios/login**
+```json
+Request:
+{
+  "username": "admin",
+  "contraseña": "admin123",
+  "role": "admin"
+}
+
+Response:
+{
+  "success": true,
+  "message": "Login exitoso",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": 1,
+      "username": "admin",
+      "rol": "admin",
+      "empleado": { ... }
+    }
   }
-};
+}
 ```
 
-### 2. **Crear Rutas**
+### Empleados
 
-Ejemplo: `src/routes/empleado.routes.js`
+**GET /api/empleados**
+- Autenticación: Requerida
+- Roles: admin, supervisor
+- Query params: `page`, `limit`, `departamento_id`, `activo`
 
-```javascript
-import express from 'express';
-import { getAllEmpleados } from '../controllers/empleado.controller.js';
-
-const router = express.Router();
-
-router.get('/', getAllEmpleados);
-
-export default router;
+**POST /api/empleados**
+```json
+Request:
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "dni": "12345678",
+  "email": "juan.perez@empresa.com",
+  "telefono": "555-1234",
+  "fecha_contratacion": "2024-01-15",
+  "puesto": "Desarrollador",
+  "hora_entrada": "09:00",
+  "hora_salida": "18:00",
+  "departamento_id": 1
+}
 ```
 
-### 3. **Registrar Rutas en server.js**
+**PUT /api/empleados/:id**
+- Actualiza datos del empleado
 
-```javascript
-import empleadoRoutes from './routes/empleado.routes.js';
-app.use('/api/empleados', empleadoRoutes);
+**DELETE /api/empleados/:id**
+- Soft delete (marca como inactivo)
+
+### Registros
+
+**GET /api/registros**
+- Lista registros activos con paginación
+
+**POST /api/registros**
+```json
+Request:
+{
+  "empleado_id": 1,
+  "tipo_registro": "entrada",
+  "observaciones": "Llegada puntual"
+}
 ```
 
-## 🐛 Solución de Problemas
+**GET /api/registros/eliminados**
+- Lista registros marcados como eliminados
 
-### Error: "Unable to connect to the database"
+**POST /api/registros/:id/restaurar**
+- Restaura un registro eliminado
 
-**Causas:**
-- PostgreSQL no está corriendo
-- Credenciales incorrectas en `.env`
-- Base de datos `timetrack` no existe
+### Departamentos
 
-**Solución:**
+**GET /api/departamentos**
+**POST /api/departamentos**
+**PUT /api/departamentos/:id**
+**DELETE /api/departamentos/:id**
+
+## Seguridad Implementada
+
+### Autenticación y Autorización
+- JWT con expiración configurable (default: 24h)
+- Refresh token rotation para sesiones largas
+- Middleware de verificación por ruta
+- Control de acceso basado en roles (RBAC)
+
+### Protección de Datos
+- Bcrypt para hashing de contraseñas (salt rounds: 10)
+- Sanitización de inputs con express-validator
+- Protección contra SQL injection mediante Sequelize
+- Escape de datos en respuestas
+
+### Seguridad HTTP
+- Helmet para headers seguros (CSP, HSTS, XSS protection)
+- CORS con whitelist de dominios permitidos
+- Rate limiting: 1000 req/15min general, 5 req/15min login
+- Trust proxy habilitado para producción
+
+### Auditoría
+- Logging de todas las peticiones con Morgan
+- Sistema de auditoría para cambios críticos
+- Timestamps en todas las tablas
+- Soft deletes para mantener historial
+
+## Scripts Disponibles
 
 ```bash
-# Verificar si PostgreSQL está corriendo
-# Windows:
-sc query postgresql-x64-16
+# Desarrollo
+npm run dev              # Inicia servidor con nodemon
 
-# Crear la base de datos si no existe
-psql -U postgres
-CREATE DATABASE timetrack;
+# Producción
+npm start                # Inicia servidor en modo producción
+
+# Base de datos
+npm run db:create        # Crea tablas en PostgreSQL
+npm run db:seed          # Inserta datos de prueba
+npm run db:setup         # Ejecuta create + seed
+
+# Utilidades
+npm run health           # Verifica estado del servidor
 ```
 
-### Error: "Port 4000 already in use"
+## Manejo de Errores
 
-**Solución:** Cambia el puerto en `.env`:
+El sistema implementa un manejador centralizado de errores que captura:
+
+- Errores de validación de Sequelize
+- Errores de autenticación (401)
+- Errores de autorización (403)
+- Errores de recursos no encontrados (404)
+- Errores de servidor (500)
+
+Formato de respuesta de error:
+```json
+{
+  "success": false,
+  "message": "Descripción del error",
+  "error": {
+    "code": "ERROR_CODE",
+    "details": { ... }
+  }
+}
+```
+
+## Despliegue en Producción
+
+### Render
+
+1. Crear nuevo Web Service en Render
+2. Conectar repositorio de GitHub
+3. Configurar:
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Environment: Node
+4. Agregar PostgreSQL database (Plan gratuito disponible)
+5. Configurar variables de entorno en Settings
+6. Deploy automático en cada push a main
+
+### Variables de Entorno Requeridas
 
 ```env
-PORT=5000
+NODE_ENV=production
+PORT=4000
+DB_HOST=<render-postgres-host>
+DB_PORT=5432
+DB_USER=<db-user>
+DB_PASSWORD=<db-password>
+DB_NAME=<db-name>
+JWT_SECRET=<secret-seguro>
+FRONTEND_URL=https://tu-frontend.vercel.app
 ```
 
-### Error: "Cannot find module"
+## Troubleshooting
 
-**Solución:** Reinstala las dependencias:
-
+**Error: No se puede conectar a PostgreSQL**
 ```bash
-rm -rf node_modules
-rm package-lock.json
-npm install
+# Verificar que PostgreSQL está corriendo
+pg_isready
+
+# Verificar credenciales en .env
+# Verificar que la base de datos existe
+psql -U postgres -l
 ```
 
-## 🔐 Seguridad (Recomendaciones)
+**Error: JWT malformed**
+- Verificar que JWT_SECRET esté configurado
+- Verificar formato del token en Authorization header
 
-- ✅ Nunca subas el archivo `.env` al repositorio (está en `.gitignore`)
-- ✅ Usa contraseñas seguras para PostgreSQL
-- ✅ Implementa JWT para autenticación
-- ✅ Valida y sanitiza todas las entradas del usuario
-- ✅ Usa HTTPS en producción
-- ✅ Implementa rate limiting
+**Error 403 en login**
+- Verificar rate limiting (5 intentos máximo)
+- Verificar CORS (FRONTEND_URL debe coincidir)
 
-## 📚 Recursos Adicionales
+## Contribución
 
-- [Documentación de Express.js](https://expressjs.com/)
-- [Documentación de Sequelize](https://sequelize.org/)
-- [Documentación de PostgreSQL](https://www.postgresql.org/docs/)
-- [Buenas prácticas de Node.js](https://github.com/goldbergyoni/nodebestpractices)
+Ver [CONTRIBUTING.md](../CONTRIBUTING.md) para guías de contribución.
 
-## 👥 Equipo
+## Licencia
 
-**TimeTrack Team** - Octubre 2025
-
-## 📄 Licencia
-
-MIT License - Puedes usar este código libremente.
-
----
-
-**¿Necesitas ayuda?** Revisa la sección de Solución de Problemas o consulta la documentación oficial de cada tecnología.
-
-¡Happy Coding! 🚀
+MIT License - Ver LICENSE para más detalles
