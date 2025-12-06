@@ -142,6 +142,11 @@ const useAuthStore = create<AuthState>()(
        * Restaura la sesión desde localStorage si existe
        */
       checkSession: () => {
+        // Verificar que estamos en el cliente
+        if (typeof window === 'undefined') {
+          return false;
+        }
+        
         const user = getCurrentUser() as User | null;
         const token = localStorage.getItem('authToken');
         

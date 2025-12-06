@@ -12,6 +12,10 @@ const App = dynamic(() => import('../App'), {
   ),
 });
 
+// Forzar renderizado dinámico - no prerenderizar
+export const dynamicParams = true;
+export const revalidate = 0;
+
 export default function Home() {
   return <App />;
 }

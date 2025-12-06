@@ -209,4 +209,5 @@ export function LoginPage() {
   );
 }
 
+// Export default para React Router (no para Next.js)
 export default LoginPage;

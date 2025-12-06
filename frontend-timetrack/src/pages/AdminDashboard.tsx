@@ -2,6 +2,8 @@
  * AdminDashboard - Panel de Administrador (derivado de /usuarios y /registros)
  */
 
+'use client';
+
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -427,5 +429,6 @@ export function AdminDashboard() {
   );
 }
 
+// Export default para React Router (no para Next.js)
 export default AdminDashboard;
 

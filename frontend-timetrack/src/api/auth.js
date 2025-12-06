@@ -243,6 +243,11 @@ export const verifySession = async () => {
  * @returns {Object|null} - Datos del usuario o null si no existe
  */
 export const getCurrentUser = () => {
+  // Verificar que estamos en el cliente
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  
   const userStr = localStorage.getItem('authUser');
   if (!userStr) return null;
   

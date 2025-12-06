@@ -6,6 +6,8 @@
  * @module pages/CollaboratorDashboard
  */
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -499,5 +501,6 @@ export function CollaboratorDashboard() {
   );
 }
 
+// Export default para React Router (no para Next.js)
 export default CollaboratorDashboard;
 
